@@ -4,19 +4,9 @@ import kotlin.math.abs
 
 // O(n) time solution to check if the difference between 2 strings is 1 character (insert/remove/replace)
 fun String.oneAway(str: String): Boolean {
-    if (abs(this.length - str.length) > 1)
-        return false
+    if (abs(length - str.length) > 1) return false
 
-    val shorterStr: String
-    val longerStr: String
-
-    if (this.length < str.length){
-        shorterStr = this
-        longerStr = str
-    } else {
-        shorterStr = str
-        longerStr = this
-    }
+    val (shorterStr, longerStr) = if (length < str.length) this to str else str to this
 
     var foundDifference = false
     var idx1 = 0
@@ -27,8 +17,7 @@ fun String.oneAway(str: String): Boolean {
             if (foundDifference) return false
             foundDifference = true
 
-            if (shorterStr.length == longerStr.length)
-                idx1++
+            if (shorterStr.length == longerStr.length) idx1++
         } else {
             idx1++
         }

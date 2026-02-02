@@ -5,13 +5,12 @@ package ArraysAndStringsCtCi
 // use a CharArray because String is immutable so this way we can do it in one pass
 // I guess StringBuilder would work too
 fun CharArray.urlify(trueLength: Int): String {
+    if (size == trueLength) return String(this)
 
-    if (this.size == trueLength) return String(this)
-
-	// triple the spaces to leave room for "%20"
-    var targetIdx = trueLength + (0 until trueLength).count { this[it] == ' ' } * 2 - 1
-	// now edit the string backwards
-    for (idx in trueLength - 1 downTo 0)
+    // triple the spaces to leave room for "%20"
+    var targetIdx = trueLength + take(trueLength).count { it == ' ' } * 2 - 1
+    // now edit the string backwards
+    for (idx in trueLength - 1 downTo 0) {
         if (this[idx] != ' ') {
             this[targetIdx--] = this[idx]
         } else {
@@ -20,6 +19,7 @@ fun CharArray.urlify(trueLength: Int): String {
             this[targetIdx - 2] = '%'
             targetIdx -= 3
         }
+    }
 
     return String(this)
 }

@@ -2,15 +2,13 @@ package StacksAndQueuesCtCi
 
 class Stack<E> {
     private val minCapacityIncrement = 12
-    private var elements = arrayOf<Any?>()
+    private var elements: Array<Any?> = arrayOf()
     private var size = 0
 
     fun push(element: E) {
         if (size == elements.size) {
-            val newArray = arrayOfNulls<Any?>(size + if (size < minCapacityIncrement / 2)
-                minCapacityIncrement
-            else
-                size shr 1)
+            val newCapacity = size + if (size < minCapacityIncrement / 2) minCapacityIncrement else (size shr 1)
+            val newArray = arrayOfNulls<Any?>(newCapacity)
             System.arraycopy(elements, 0, newArray, 0, size)
             elements = newArray
         }

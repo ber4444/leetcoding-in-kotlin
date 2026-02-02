@@ -1,15 +1,15 @@
 package BitManipulation
 
 // return number of 1 bits a number has (assume it's positive)
-// tip: "and" returns 1 is two bits are both one
+// tip: "and" returns 1 if two bits are both one
 fun Int.numberOfOnes(): Int {
-    var ret = 0
+    var count = 0
     var x = this
-    while(x > 0) {
-        ret++
-        x = x and x-1
+    while (x > 0) {
+        count++
+        x = x and (x - 1)
     }
-    return ret
+    return count
 }
 
 println(Integer.toBinaryString(11))

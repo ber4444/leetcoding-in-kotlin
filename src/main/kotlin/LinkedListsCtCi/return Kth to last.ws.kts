@@ -1,6 +1,6 @@
 package LinkedListsCtCi
 
-class Node<T>(var data: T){
+class Node<T>(var data: T) {
     var next: Node<T>? = null
 }
 
@@ -9,7 +9,7 @@ class LinkedList<T> {
 
     fun add(value: T) {
         val newNode = Node(value)
-        val lastNode = this.last()
+        val lastNode = last()
         if (lastNode != null) {
             lastNode.next = newNode
         } else {
@@ -19,12 +19,10 @@ class LinkedList<T> {
 
     private fun last(): Node<T>? {
         var node = head
-        return if (node != null){
-            while (node?.next != null) {
-                node = node.next
-            }
-            node
-        } else null
+        while (node?.next != null) {
+            node = node.next
+        }
+        return node
     }
 }
 
@@ -33,22 +31,26 @@ class LinkedList<T> {
 // here k=1 is last element, k=2 is 2nd last, etc
 // (if the size of the list is known, just iterate to the element at length-k position)
 fun Node<Int>.nthToLast(k: Int): Node<Int>? {
-    var p1: Node<Int>? = this // will remain k notes apart from p2
-    var p2: Node<Int>? = this // will denote the beginning of the list
+    var first = this    // will remain k nodes ahead
+    var second = this   // will denote the element at position length-k
 
-    /* Move p1 k nodes into the list.*/
-    for (i in 0 until k) {
-        if (p1 == null) return null // Out of bounds
-        p1 = p1.next
+    // Move first k nodes into the list
+    repeat(k) {
+        if (first != null) {
+            first = first.next
+        } else {
+            return null // Out of bounds
+        }
     }
 
-    /* Move them at the same pace. When p1 hits the end,
-		 * p2 will be at the right element. */
-    while (p1 != null) {
-        p1 = p1.next
-        p2 = p2?.next
+    // Move them at the same pace. When first hits the end,
+    // second will be at the right element.
+    while (first != null) {
+        first = first.next
+        second = second.next
     }
-    return p2
+
+    return second
 }
 
 var ll = LinkedList<Int>()

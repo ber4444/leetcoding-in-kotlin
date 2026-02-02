@@ -1,8 +1,10 @@
 package Threads
 
+import kotlinx.coroutines.delay
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 // I tried to add the dependency via gradle but something is broken
 
 val atomicInteger = AtomicInteger(0)
@@ -42,6 +44,8 @@ runBlocking<Unit> {
         .map { request -> performRequest(request) }
         .collect { response -> println(response) }
 }
-
+fun performRequest(request: Int): String {
+    return "response $request"
+}
 // see more at https://kotlinlang.org/docs/flow.html#declarative-handling
 // and https://developer.android.com/kotlin/flow

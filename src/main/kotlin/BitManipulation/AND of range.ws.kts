@@ -3,15 +3,16 @@ package BitManipulation
 // return AND of all ints in a range
 // tip: use shifting
 fun solution(a: Int, b: Int): Int {
+    var shiftCount = 0
     var x = a
     var y = b
-    var ret = 0
+
     while (x != y && x > 0) {
         x = x shr 1
         y = y shr 1
-        ret++
+        shiftCount++
     }
-    return x shl ret
+    return x shl shiftCount
 }
 
 println(Integer.toBinaryString(2))

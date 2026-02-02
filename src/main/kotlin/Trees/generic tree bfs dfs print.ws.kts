@@ -1,7 +1,6 @@
 package Trees
 
-import java.util.Queue
-import java.util.LinkedList
+import java.util.ArrayDeque
 
 class TreeNode<T>(val value: T) {
     private val children: MutableList<TreeNode<T>> = mutableListOf()
@@ -10,14 +9,12 @@ class TreeNode<T>(val value: T) {
 
     fun dfs(visit: (TreeNode<T>) -> Unit) {
         visit(this)
-        children.forEach {
-            it.dfs(visit)
-        }
+        children.forEach { it.dfs(visit) }
     }
 
     fun bfs(visit: (TreeNode<T>) -> Unit) {
         visit(this)
-        val queue: Queue<TreeNode<T>> = LinkedList()
+        val queue = ArrayDeque<TreeNode<T>>()
         children.forEach { queue.add(it) }
         var node = queue.poll()
         while (node != null) {
@@ -29,18 +26,21 @@ class TreeNode<T>(val value: T) {
 
     // modified bfs to print items on the same level of the tree in the same line
     fun printFormatted(visit: (TreeNode<T>) -> Unit) {
-        val queue: Queue<TreeNode<T>> = LinkedList()
+        val queue = ArrayDeque<TreeNode<T>>()
         var nodesLeftInCurrentLevel = 0
         queue.add(this)
+
         while (queue.isNotEmpty()) {
-            nodesLeftInCurrentLevel = queue.count() // queue is the number of children from the previous iteration
+            nodesLeftInCurrentLevel = queue.size // queue size is the number of nodes at the current level
             while (nodesLeftInCurrentLevel > 0) {
                 val node = queue.poll()
-                node?.let {
+                if (node != null) {
                     print("${node.value} ")
                     node.children.forEach { queue.add(it) }
                     nodesLeftInCurrentLevel--
-                } ?: break
+                } else {
+                    break
+                }
             }
             println()
         }

@@ -3,24 +3,27 @@ package Matrix
 // print a matrix in spiral pattern
 // see shorter solutions at https://leetcode.com/problems/spiral-matrix/solution/
 fun Array<IntArray>.spiral(): List<Int> {
-    if (this.isEmpty() || this[0].isEmpty()) return listOf()
-    if (this.size == 1) return this.flatMap { it.toList() }
-    if (this[0].size == 1) return this.map { it[0] }
+    if (isEmpty() || this[0].isEmpty()) return listOf()
+    if (size == 1) return flatMap { it.toList() }
+    if (this[0].size == 1) return map { it[0] }
+
     // get number of elements
-    val n = this.size * this[0].size
-    val ret = ArrayList<Int>(n)
-    val printed = Array(n) { BooleanArray(this[0].size) }
-    val middleX = if (this.size % 2 == 0) (this.size - 1) / 2 else this.size / 2
-    val middleY = if (this[0].size % 2 == 0) (this[0].size - 1) / 2 else this[0].size / 2
+    val n = size * this[0].size
+    val result = ArrayList<Int>(n)
+    val printed = Array(size) { BooleanArray(this[0].size) }
+    val middleRow = if (size % 2 == 0) (size - 1) / 2 else size / 2
+    val middleCol = if (this[0].size % 2 == 0) (this[0].size - 1) / 2 else this[0].size / 2
     var row = 0
     var col = 0
     var depth = 0
-    while (row <= middleX && col <= middleY && depth <= middleX && depth <= middleY) {
+
+    while (row <= middleRow && col <= middleCol && depth <= middleRow && depth <= middleCol) {
         row = depth
         col = depth
+
         while (col < this[0].size - depth) {
             if (!printed[row][col]) {
-                ret.add(this[row][col])
+                result.add(this[row][col])
                 printed[row][col] = true
             }
             col++

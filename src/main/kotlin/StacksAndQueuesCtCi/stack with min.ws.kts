@@ -3,11 +3,11 @@ package StacksAndQueuesCtCi
 import java.util.*
 
 class StackWithMin : Stack<Int>() {
-	var s2 = Stack<Int>()
+	private val minStack = Stack<Int>()
 
 	override fun push(value: Int): Int {
 		if (value <= min()) {
-			s2.push(value)
+			minStack.push(value)
 		}
 		return super.push(value)
 	}
@@ -15,19 +15,13 @@ class StackWithMin : Stack<Int>() {
 	override fun pop(): Int? {
 		val value = super.pop()
 		if (value == min()) {
-			s2.pop()
+			minStack.pop()
 		}
 		return value
 	}
 
-	// O(1) time for returning min value in stack 
-	fun min(): Int {
-		return if (s2.isEmpty()) {
-			Int.MAX_VALUE
-		} else {
-			s2.peek()
-		}
-	}
+	// O(1) time for returning min value in stack
+	fun min(): Int = if (minStack.isEmpty()) Int.MAX_VALUE else minStack.peek()
 }
 
 val stack = StackWithMin()

@@ -2,27 +2,23 @@ package ArraysAndStringsCtCi
 
 // compress a str (composed of a-z, A-Z chrs only) using the count of repeated chrs
 fun String.compress(): String {
+    if (!matches(Regex("[a-zA-Z]+"))) throw IllegalArgumentException()
 
-    if (!this.matches(Regex("[a-zA-Z]+")))
-        throw IllegalArgumentException()
-
-    var i = 0
-    var count: Int
-    val sb = StringBuilder()
-    while (i < this.length) {
-        count = 1
-        while (i != this.length - 1 && this[i + 1] == this[i]) {
+    val result = buildString {
+        var i = 0
+        while (i < length) {
+            var count = 1
+            while (i != length - 1 && this@compress[i + 1] == this@compress[i]) {
+                i++
+                count++
+            }
+            append(this@compress[i])
+            append(count)
             i++
-            count++
         }
-
-        sb.append(this[i], count)
-        i++
     }
 
-    val result = sb.toString()
-
-    return if (result.length > this.length) this else result
+    return if (result.length > length) this else result
 }
 
 "aabccccccccdeFFFFggggggghi".compress() == "a2b1c8d1e1F4g7h1i1"

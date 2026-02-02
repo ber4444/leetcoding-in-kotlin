@@ -1,14 +1,14 @@
 package LinkedListsCtCi
 
-class Node(var data: Int){
+class Node(var data: Int) {
 	var next: Node? = null
 
 	fun linkedListToInt(): Int {
 		var value = 0
-		this.next?.let {
+		next?.let {
 			value = 10 * it.linkedListToInt()
 		}
-		return value + this.data
+		return value + data
 	}
 }
 
@@ -17,7 +17,7 @@ class LinkedList {
 
 	fun add(value: Int) {
 		val newNode = Node(value)
-		val lastNode = this.last()
+		val lastNode = last()
 		if (lastNode != null) {
 			lastNode.next = newNode
 		} else {
@@ -27,32 +27,28 @@ class LinkedList {
 
 	private fun last(): Node? {
 		var node = head
-		return if (node != null){
-			while (node?.next != null) {
-				node = node.next
-			}
-			node
-		} else null
+		while (node?.next != null) {
+			node = node.next
+		}
+		return node
 	}
 }
 
 // e.g. 6->1->7 + 2->9->5 = 9->1->2
-// (note: head of the 1st list is 7, that us what we add first)
+// (note: head of the 1st list is 7, that is what we add first)
 // add node by node and carry the excess
-fun Node.addLists(node: Node?, carry: Int = 0): Node? {
-	if (node == null && carry == 0) {
-		return null
-	}
+fun Node.addLists(other: Node?, carry: Int = 0): Node? {
+	if (other == null && carry == 0) return null
+
 	val result = Node(0)
-	var value = carry
-	value += this.data
-	if (node != null) {
-		value += node.data
+	var value = carry + data
+	if (other != null) {
+		value += other.data
 	}
+
 	result.data = value % 10
-	node?.let {
-		result.next = this.next?.addLists(it.next, if (value >= 10) 1 else 0)
-	}
+	result.next = next?.addLists(other?.next, if (value >= 10) 1 else 0)
+
 	return result
 }
 

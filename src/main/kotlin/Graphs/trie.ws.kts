@@ -9,24 +9,17 @@ class Trie {
 
     fun insert(word: String) {
         var currentNode = root
-        for (char in word) { // we could store the char count to quickly lookup how many words are there for any given prefix
-            if (currentNode.childNodes[char] == null) {
-                currentNode.childNodes[char] = Node()
-            }
-            currentNode = currentNode.childNodes[char]!!
+        for (char in word) {
+            currentNode = currentNode.childNodes.getOrPut(char) { Node() }
         }
         currentNode.word = word
     }
 
-    // further lookups (e.g. user typing subsequent letters of the same word) can be faster if we returned the currentNode
-    //  then next lookup would just check if the letter is a child of that node
     fun startsWith(word: String): Boolean {
         var currentNode = root
         for (char in word) {
-            if (currentNode.childNodes[char] == null) {
-                return false
-            }
-            currentNode = currentNode.childNodes[char]!!
+            val nextNode = currentNode.childNodes[char] ?: return false
+            currentNode = nextNode
         }
         return currentNode.word == null
     }
@@ -37,16 +30,16 @@ class Trie {
             val child = current.childNodes[char] ?: return emptyList()
             current = child
         }
-        return _collections(prefix, current)
+        return collectMatches(prefix, current)
     }
 
-    private fun _collections(prefix: String, node: Node?): List<String> {
+    private fun collectMatches(prefix: String, node: Node?): List<String> {
         val results = mutableListOf<String>()
         if (node?.word != null) {
             results.add(prefix)
         }
-        node?.childNodes?.forEach { (key, node) ->
-            results.addAll(_collections(prefix + key, node))
+        node?.childNodes?.forEach { (char, childNode) ->
+            results.addAll(collectMatches(prefix + char, childNode))
         }
         return results
     }

@@ -1,14 +1,12 @@
 package LinkedListsCtCi
 
-class Node<T>(var data: T){
+class Node<T>(var data: T) {
     var next: Node<T>? = null
 
-    fun getList(): String {
-        return if (next != null) {
-            data.toString() + "->" + next?.getList()
-        } else {
-            data.toString()
-        }
+    fun getList(): String = if (next != null) {
+        "$data->${next?.getList()}"
+    } else {
+        data.toString()
     }
 }
 
@@ -17,7 +15,7 @@ class LinkedList<T> {
 
     fun add(value: T) {
         val newNode = Node(value)
-        val lastNode = this.last()
+        val lastNode = last()
         if (lastNode != null) {
             lastNode.next = newNode
         } else {
@@ -27,23 +25,19 @@ class LinkedList<T> {
 
     private fun last(): Node<T>? {
         var node = head
-        return if (node != null){
-            while (node?.next != null) {
-                node = node.next
-            }
-            node
-        } else null
+        while (node?.next != null) {
+            node = node.next
+        }
+        return node
     }
 }
 
 // given access to a single node only in the middle of a singly linked list (no access to head), delete it
 fun Node<Int>?.deleteNode(): Boolean {
-    if (this == null || this.next == null) {
-        return false
-    }
-    val next = this.next
-    next?.let { this.data = it.data }
-    this.next = next?.next
+    if (this == null || next == null) return false
+
+    data = next!!.data
+    next = next!!.next
     return true
 }
 

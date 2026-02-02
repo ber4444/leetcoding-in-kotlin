@@ -1,22 +1,27 @@
 package Trees
 
 import java.util.ArrayDeque
-import java.util.Deque
 
-data class Node<T>(val value: T,
-                   var leftNode: Node<T>? = null,
-                   var rightNode: Node<T>? = null) {
-    fun link(left: Node<T>?, right: Node<T>?) = this.apply { linkLeft(left).linkRight(right) }
-    private fun linkLeft(left: Node<T>?) = this.apply { leftNode = left }
-    private fun linkRight(right: Node<T>?) = this.apply { rightNode = right }
+data class Node<T>(
+    val value: T,
+    var leftNode: Node<T>? = null,
+    var rightNode: Node<T>? = null
+) {
+    fun link(left: Node<T>?, right: Node<T>?) = apply {
+        linkLeft(left)
+        linkRight(right)
+    }
+
+    private fun linkLeft(left: Node<T>?) = apply { leftNode = left }
+    private fun linkRight(right: Node<T>?) = apply { rightNode = right }
 }
 
 fun <T> dfs(root: Node<T>): List<Node<T>> {
-    val stack: Deque<Node<T>> = ArrayDeque()
+    val stack = ArrayDeque<Node<T>>()
     val traversalList = mutableListOf<Node<T>>()
 
     stack.push(root)
-    // Use stack to create breadth first traversal.
+
     while (stack.isNotEmpty()) {
         val currentNode = stack.pop()
         currentNode.rightNode?.let { stack.push(it) }

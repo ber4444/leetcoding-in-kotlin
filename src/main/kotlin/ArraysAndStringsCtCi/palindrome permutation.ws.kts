@@ -4,14 +4,11 @@ package ArraysAndStringsCtCi
 // palindrome is the same backwards and forwards (*), permutation is a rearrangement of letters
 // (*) meaning all chrs must have an even count, only the middle chr can have an odd count
 fun String.isPalindromePerm(): Boolean {
+    // count how many times each chr appears (excluding non-letters)
+    val charCounts = replace("[^A-Za-z]".toRegex(), "").groupingBy { it }.eachCount()
 
-    val strMap = HashMap<Char, Int>()
-
-	// count how many times each chr appears
-	this.replace("[^A-Za-z]".toRegex(), "").forEach { strMap[it] = (strMap[it] ?: 0) + 1 }
-
-	// no more than 1 chr should have an odd count
-	return strMap.count { it.value.rem(2) == 1 } <= 1
+    // no more than 1 chr should have an odd count
+    return charCounts.count { it.value % 2 == 1 } <= 1
 }
 
 "pdepdrremama".isPalindromePerm()

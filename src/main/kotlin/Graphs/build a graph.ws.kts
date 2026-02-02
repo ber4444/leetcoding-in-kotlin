@@ -2,19 +2,19 @@ package Graphs
 
 class Graph<T> {
     // maps nodes to adjacent nodes
-    private val adjacencyMap = HashMap<T, HashSet<T>>()
+    private val adjacencyMap: MutableMap<T, MutableSet<T>> = mutableMapOf()
 
     fun addEdge(source: T, dest: T) {
-        adjacencyMap.computeIfAbsent(source) { HashSet() }.add(dest)
-        // in this case the graph is directed, meaning that a connection is stored both at source and dest
-        adjacencyMap.computeIfAbsent(dest) { HashSet() }.add(source)
+        adjacencyMap.computeIfAbsent(source) { mutableSetOf() }.add(dest)
+        // in this case the graph is undirected, meaning that a connection is stored both at source and dest
+        adjacencyMap.computeIfAbsent(dest) { mutableSetOf() }.add(source)
     }
 
-    override fun toString() = StringBuffer().apply {
-        for (key in adjacencyMap.keys) {
-            append("$key -> ${adjacencyMap[key]}\n")
+    override fun toString() = buildString {
+        for ((key, neighbors) in adjacencyMap) {
+            append("$key -> $neighbors\n")
         }
-    }.toString()
+    }
 }
 
 /*

@@ -1,9 +1,8 @@
 package Warmup
 
-fun sum(n: Int): Int {
-    return if (n <= 0) 0 else n + sum(n-1)
-}
-sum(3)
+fun sum(n: Int): Int =
+    if (n <= 0) 0 else n + sum(n - 1)
+
 /*
 call stack for the above:
 sum(3) -> 2
@@ -13,13 +12,12 @@ sum(3) -> 2
  and n=3 + 2 + 1 = 6, both time and space complexity being O(n) because of recursion
  */
 
-fun fibonacci(n: Int): Int {
-    return when {
-        n<=0 -> 0
-        n==1 -> 1
-        else -> fibonacci(n-1) + fibonacci(n-2)
-    }
+fun fibonacci(n: Int): Int = when {
+    n <= 0 -> 0
+    n == 1 -> 1
+    else -> fibonacci(n - 1) + fibonacci(n - 2)
 }
+
 /*
 the time complexity of this is O(2^n) because the call tree has n depth and it's a binary tree
 the space complexity is O(n) because only that many notes of the tree exist at any given time
@@ -39,11 +37,9 @@ n^n
  */
 
 // factorial computation is actually O(n) time:
-// 5! = 5+4+3+2+1
-fun factorial(n: Int): Int {
-    return when {
-        n<0 -> -1
-        n==0 -> 1
-        else -> n * factorial(n-1)
-    }
+// 5! = 5*4*3*2*1
+fun factorial(n: Int): Int = when {
+    n < 0 -> -1
+    n == 0 -> 1
+    else -> n * factorial(n - 1)
 }

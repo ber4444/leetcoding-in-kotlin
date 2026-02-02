@@ -5,43 +5,38 @@ class Stack<E> {
     private var head: Node<E>? = null
     private var tail: Node<E>? = null
 
-    private inner class Node<E> constructor(var prev: Node<E>?, var element: E, var next: Node<E>?)
+    private inner class Node<E>(var prev: Node<E>?, var element: E, var next: Node<E>?)
 
     fun push(element: E) {
-        val t = tail
-        val newNode = Node(t, element, null)
+        val currentTail = tail
+        val newNode = Node(currentTail, element, null)
         tail = newNode
-        if (t == null) {
+        if (currentTail == null) {
             head = newNode
         } else {
-            t.next = newNode
+            currentTail.next = newNode
         }
         size++
     }
 
     fun pop(): E {
-        tail?.let {
-            val prev = it.prev
-            it.prev = null
-            tail = prev
-            if (prev == null) {
-                head = null
-            } else {
-                prev.next = null
-            }
-            size--
-            return it.element
-        } ?: throw StackUnderflowException()
+        val currentTail = tail ?: throw StackUnderflowException()
+        val prev = currentTail.prev
+        tail = prev
+        if (prev == null) {
+            head = null
+        } else {
+            prev.next = null
+        }
+        size--
+        return currentTail.element
     }
 
-    fun peek(): E {
-        tail?.let {
-            return it.element
-        } ?: throw StackUnderflowException()
-    }
+    fun peek(): E = tail?.element ?: throw StackUnderflowException()
 
     fun isEmpty() = size == 0
 }
+
 class StackUnderflowException : RuntimeException()
 
 val stack = Stack<Int>()

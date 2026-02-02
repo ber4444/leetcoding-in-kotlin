@@ -1,47 +1,33 @@
 package Graphs
 
 import java.util.ArrayDeque
-import java.util.Deque
 
 class Graph<T> {
-    val adjacencyMap: HashMap<T, HashSet<T>> = HashMap()
+    val adjacencyMap: MutableMap<T, MutableSet<T>> = mutableMapOf()
     fun addEdge(source: T, dest: T) {
-        adjacencyMap.computeIfAbsent(source) { HashSet() }.add(dest)
-        // in this case the graph is directed, meaning that a connection is stored both at source and dest
-        adjacencyMap.computeIfAbsent(dest) { HashSet() }.add(source)
+        adjacencyMap.computeIfAbsent(source) { mutableSetOf() }.add(dest)
+        // in this case the graph is undirected, meaning that a connection is stored both at source and dest
+        adjacencyMap.computeIfAbsent(dest) { mutableSetOf() }.add(source)
     }
 }
 
-// not recursive, just uses a queue and needs a "visited" flag so that we don’t backtrack and revisit nodes
-fun <T> bfs(graph: Graph<T>,
-            startNode: T): String {
-    // Mark all the vertices / nodes as not visited. And keep track of sequence
-    // in which nodes are visited, for return value.
+// not recursive, just uses a queue and needs a "visited" flag so that we don't backtrack and revisit nodes
+fun <T> bfs(graph: Graph<T>, startNode: T): String {
     val traversalList = mutableListOf<T>()
-    val visitedMap = mutableMapOf<T, Boolean>().apply {
-        for (node in graph.adjacencyMap.keys) this[node] = false
-    }
+    val visited = mutableSetOf<T>()
+    val queue = ArrayDeque<T>()
 
-    class Queue {
-        val queue: Deque<T> = ArrayDeque()
-        fun add(node: T) = queue.add(node)
-        fun isNotEmpty() = queue.isNotEmpty()
-        fun remove() = queue.remove()
-    }
-    val queue = Queue()
     queue.add(startNode)
-    // Traverse the graph
+
     while (queue.isNotEmpty()) {
-        // Remove the item at the head of the queue.
-        val currentNode = queue.remove()
-        if (visitedMap[currentNode] == false) {
-            // Mark the current node visited and add to traversal list.
+        val currentNode = queue.removeFirst()
+        if (currentNode !in visited) {
             traversalList.add(currentNode)
-            visitedMap[currentNode] = true
-            // Add nodes in the adjacency map.
+            visited.add(currentNode)
             graph.adjacencyMap[currentNode]?.forEach { queue.add(it) }
         }
     }
+
     return traversalList.toString()
 }
 
@@ -52,5 +38,5 @@ graph.addEdge('A', 'C')
 graph.addEdge('C', 'D')
 // start with an arbitrary node, and explore each neighbor ("breath first") before moving on to their children - moving level by level
 // BFS is typically better than DFS for path finding
-// Dijkstra’s algorithm (which can be bidirectional as well) is used for finding shortest path
+// Dijkstra's algorithm (which can be bidirectional as well) is used for finding shortest path
 println(bfs(graph, 'E'))

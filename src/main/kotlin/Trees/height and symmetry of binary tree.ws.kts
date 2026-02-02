@@ -1,16 +1,20 @@
 package Trees
 
-data class Node<T>(val value: T,
-                   var leftNode: Node<T>? = null,
-                   var rightNode: Node<T>? = null) {
-    fun link(left: Node<T>?, right: Node<T>?) = this.apply {
+data class Node<T>(
+    val value: T,
+    var leftNode: Node<T>? = null,
+    var rightNode: Node<T>? = null
+) {
+    fun link(left: Node<T>?, right: Node<T>?) = apply {
         leftNode = left
         rightNode = right
     }
-    // O(n) time - traverses all nodes, and O(n) space because of recursion
-    fun height(node: Node<T>? = this): Int = node?.let { 1 + Math.max(height(node.leftNode), height(node.rightNode)) } ?: -1
 
-    fun isSymmetric(left: Node<T>? = this.leftNode, right: Node<T>? = this.rightNode): Boolean {
+    // O(n) time - traverses all nodes, and O(n) space because of recursion
+    fun height(node: Node<T>? = this): Int =
+        node?.let { 1 + maxOf(height(node.leftNode), height(node.rightNode)) } ?: -1
+
+    fun isSymmetric(left: Node<T>? = leftNode, right: Node<T>? = rightNode): Boolean {
         if (left == null && right == null) return true
         return (left != null && right != null) &&
                 isSymmetric(left.leftNode, right.rightNode) &&

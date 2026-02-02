@@ -10,7 +10,7 @@ class LinkedList {
     var head: Node? = null
 
     fun add(newNode: Node) {
-        val lastNode = this.last()
+        val lastNode = last()
         if (lastNode != null) {
             lastNode.next = newNode
         } else {
@@ -20,66 +20,56 @@ class LinkedList {
 
     private fun last(): Node? {
         var node = head
-        return if (node != null){
-            while (node?.next != null) {
-                node = node.next
-            }
-            node
-        } else null
+        while (node?.next != null) {
+            node = node.next
+        }
+        return node
     }
 }
 
-data class Result(
-	val tail: Node,
-	val size: Int
-)
+data class Result(val tail: Node, val size: Int)
 
-fun _getTailAndSize(list: Node): Result {
-	var size = 1
-	var current: Node = list
-	current.next?.let {
-		size++
-		current = it
-	}
-	return Result(current, size)
+fun getTailAndSize(list: Node): Result {
+    var size = 1
+    var current = list
+    while (current.next != null) {
+        size++
+        current = current.next!!
+    }
+    return Result(current, size)
 }
 
-fun _getKthNode(head: Node?, k: Int): Node? {
-	var kk = k
-	var current: Node? = head
-	while (kk > 0 && current != null) {
-		current = current?.next
-		kk--
-	}
-	return current
+fun getKthNode(head: Node?, k: Int): Node? {
+    var current = head
+    repeat(k) {
+        current = current?.next
+    }
+    return current
 }
-
 
 // if 2 singly linked lists intersect, return the intersecting node (as determined by reference, not by value)
 // the trick is to realize that two intersecting nodes always have the same last node
 // traverse the 2 lists in parallel and look at where they collide (chop off the excess nodes from the start if one is longer)
 fun findIntersection(list1: Node, list2: Node): Node? {
-	val tail1 = _getTailAndSize(list1)
-	val tail2 = _getTailAndSize(list2)
+    val tail1 = getTailAndSize(list1)
+    val tail2 = getTailAndSize(list2)
 
-	// If different tail nodes, then there's no intersection.
-	if (tail1.tail !== tail2.tail) { // !== is checking for difference by reference (not by equals())
-		return null
-	}
+    // If different tail nodes, then there's no intersection.
+    if (tail1.tail !== tail2.tail) return null
 
-	// get the head of each list
-	var shorter: Node? = if (tail1.size < tail2.size) list1 else list2
-	var longer: Node? = if (tail1.size < tail2.size) list2 else list1
+    // get the head of each list
+    var shorter = if (tail1.size < tail2.size) list1 else list2
+    var longer = if (tail1.size < tail2.size) list2 else list1
 
-	// chop off extra stuff from the longer list
-	longer = _getKthNode(longer, abs(tail1.size - tail2.size))
+    // chop off extra stuff from the longer list
+    longer = getKthNode(longer, abs(tail1.size - tail2.size))!!
 
-	// Move both pointers until you have a collision.
-	while (shorter !== longer) {
-		shorter = shorter?.next
-		longer = longer?.next
-	}
-	return longer
+    // Move both pointers until you have a collision.
+    while (shorter !== longer) {
+        shorter = shorter.next!!
+        longer = longer.next!!
+    }
+    return longer
 }
 
 var ll = LinkedList()

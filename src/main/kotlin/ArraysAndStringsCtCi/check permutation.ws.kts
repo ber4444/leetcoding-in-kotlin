@@ -3,14 +3,10 @@ package ArraysAndStringsCtCi
 // O(n) solution to check if str1 is permutation of str2
 // clarify if the permutation comparison is case sensitive, and if white space counts - answers: yes to both
 fun String.checkPerm(t: String): Boolean {
-	// permutation would imply having the same chrs in different orders so can sort and compare
-	return sort(this) == sort(t)
-}
-
-fun sort(s: String): String {
-	val content = s.toCharArray()
-	content.sort()
-	return String(content)
+    if (this.length != t.length) return false
+    val thisCounts = this.groupingBy { it }.eachCount()
+    val tCounts = t.groupingBy { it }.eachCount()
+    return thisCounts == tCounts
 }
 
 "".checkPerm("")

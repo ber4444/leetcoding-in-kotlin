@@ -2,25 +2,19 @@ package StacksAndQueuesCtCi
 
 class Queue<E> {
     private val minCapacityIncrement = 12
-
-    private var elements: Array<Any?>
+    private var elements: Array<Any?> = arrayOf()
     private var size = 0
 
-    constructor() {
-        this.elements = arrayOf()
-    }
+    constructor()
 
     constructor(initialCapacity: Int) {
-        this.elements = arrayOfNulls(initialCapacity)
+        elements = arrayOfNulls(initialCapacity)
     }
 
     fun enqueue(element: E) {
         if (size == elements.size) {
-            val newArray = arrayOfNulls<Any>(size +
-                    if (size < minCapacityIncrement / 2)
-                        minCapacityIncrement
-                    else
-                        size shr 1)
+            val newCapacity = size + if (size < minCapacityIncrement / 2) minCapacityIncrement else (size shr 1)
+            val newArray = arrayOfNulls<Any>(newCapacity)
             System.arraycopy(elements, 0, newArray, 0, size)
             elements = newArray
         }
@@ -38,20 +32,20 @@ class Queue<E> {
     fun front() = try {
         elements[0] as E
     } catch (e: IndexOutOfBoundsException) {
-        throw QueueUnderflowException();
+        throw QueueUnderflowException()
     }
-
 
     fun rear() = try {
         elements[size - 1] as E
     } catch (e: IndexOutOfBoundsException) {
-        throw QueueUnderflowException();
+        throw QueueUnderflowException()
     }
 
     fun isEmpty() = size == 0
 
     fun isFull() = size == elements.size
 }
+
 class QueueUnderflowException : RuntimeException()
 
 val queue = Queue<Int>(2)

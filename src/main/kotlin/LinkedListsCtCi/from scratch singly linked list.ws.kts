@@ -33,18 +33,18 @@ class LinkyList<E> {
     }
 
     fun deleteWithValue(element: E) {
-        head?.let { head ->
-            if (head.element == element) {
-                this.head = head.next
+        if (head?.element == element) {
+            head = head?.next
+            return
+        }
+
+        var current = head
+        while (current?.next != null) {
+            if (current.next?.element == element) {
+                current.next = current.next?.next
                 return
             }
-            var curr = head
-            while (curr.next != null) {
-                if (curr.next?.element == element) {
-                    curr.next = curr.next?.next
-                    return
-                } else curr.next?.let { curr = it } ?: break
-            }
+            current = current.next
         }
     }
 }

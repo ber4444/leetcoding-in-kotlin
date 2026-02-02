@@ -2,8 +2,8 @@ package ArraysAndStringsCtCi
 
 // assume that n is non-negative
 fun IntArray.rotateBy(rotateBy: Int): IntArray {
-    val v = this.reversedArray()
-    val k = if (rotateBy > this.size) rotateBy % this.size else rotateBy
+    val v = reversedArray()
+    val k = rotateBy % size
     return v.copyOfRange(0, k).reversedArray() + v.copyOfRange(k, v.size).reversedArray()
 }
 

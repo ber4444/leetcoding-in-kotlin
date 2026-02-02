@@ -8,7 +8,7 @@ class LinkedList {
     var head: Node? = null
 
     fun add(newNode: Node) {
-        val lastNode = this.last()
+        val lastNode = last()
         if (lastNode != null) {
             lastNode.next = newNode
         } else {
@@ -18,23 +18,21 @@ class LinkedList {
 
     private fun last(): Node? {
         var node = head
-        return if (node != null){
-            while (node?.next != null) {
-                node = node.next
-            }
-            node
-        } else null
+        while (node?.next != null) {
+            node = node.next
+        }
+        return node
     }
 }
 
 // e.g. a->b->c->d->c [same c as before]
 // detect if it has loop by using a fastRunner (moves 2 steps at a time) and a slowRunner (moves 1 step at a time) and see if they collide
 fun isCircular(node: Node): Boolean {
-    var slow: Node? = node
-    var fast: Node? = node
-    while (fast?.next != null) {
-        slow = slow?.next
-        fast = fast.next?.next
+    var slow = node
+    var fast = node
+    while (fast.next != null) {
+        slow = slow.next ?: return false
+        fast = fast.next?.next ?: return false
         if (slow === fast) return true
     }
     return false

@@ -1,15 +1,18 @@
 package Math
 
 fun Int.reversed(): Int {
-    var ret = 0L // a reversed Int may not fit into an Int
-    var n = this
-    while (n != 0) {
-        val lastDigit = n % 10 // e.g. 15 % 10 will return 5
-        n /= 10
-        ret = ret * 10 + lastDigit
-        if (ret > Int.MAX_VALUE || ret < Int.MIN_VALUE) return 0
+    var reversed = 0L // a reversed Int may not fit into an Int
+    var number = this
+
+    while (number != 0) {
+        val lastDigit = number % 10 // e.g. 15 % 10 will return 5
+        number /= 10
+        reversed = reversed * 10 + lastDigit
+
+        if (reversed > Int.MAX_VALUE || reversed < Int.MIN_VALUE) return 0
     }
-    return ret.toInt()
+
+    return reversed.toInt()
 }
 
 println("1234".reversed().toInt() == 1234.reversed())

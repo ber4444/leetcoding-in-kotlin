@@ -5,19 +5,18 @@ import java.util.*
 // implement SetOfStacks - a Stack with a limit that creates a new Stack when the limit is reached
 // push and pop is applied to the whole set as if there was a single stack in it
 class SetOfStacks(var capacity: Int) {
-
-	val stacks = ArrayList<Stack<Int>>()
+	private val stacks = mutableListOf<Stack<Int>>()
 
 	private val lastStack: Stack<Int>?
-		get() = if (stacks.isEmpty()) null
-				else stacks[stacks.size - 1]
+		get() = stacks.lastOrNull()
 
 	// call push() on the last stack in the array of stacks (unless that is at capacity in which case
 	// we need to create a new stack)
 	fun push(v: Int) {
 		val last = lastStack
-		if (last != null && last.size < capacity) last.push(v)
-		else {
+		if (last != null && last.size < capacity) {
+			last.push(v)
+		} else {
 			val stack = Stack<Int>()
 			stack.push(v)
 			stacks.add(stack)
@@ -32,7 +31,8 @@ class SetOfStacks(var capacity: Int) {
 		return v
 	}
 
-	val isEmpty = lastStack.isNullOrEmpty()
+	val isEmpty: Boolean
+		get() = lastStack?.isEmpty() ?: true
 }
 
 val setOfStacks = SetOfStacks(2)

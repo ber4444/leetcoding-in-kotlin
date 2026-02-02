@@ -5,27 +5,11 @@ package ArraysAndStringsCtCi
 // (the 1st col and 1st row is used to keep track of all rows and cols with 0's)
 fun Array<IntArray>.setZeros(): Array<IntArray> {
     // store whether or not there are 0's in the first col and first row
-    var rowHasZero = false
-    var colHasZero = false
-
-    // Check if first row has a zero
-    for (element in this[0]) {
-        if (element == 0) {
-            rowHasZero = true
-            break
-        }
-    }
-
-    // Check if first column has a zero
-    for (i in this.indices) {
-        if (this[i][0] == 0) {
-            colHasZero = true
-            break
-        }
-    }
+    val rowHasZero = this[0].any { it == 0 }
+    val colHasZero = indices.any { this[it][0] == 0 }
 
     // Check for zeros in the rest of the array
-    for (i in 1 until this.size) {
+    for (i in 1 until size) {
         for (j in 1 until this[0].size) {
             if (this[i][j] == 0) {
                 this[i][0] = 0
@@ -35,7 +19,7 @@ fun Array<IntArray>.setZeros(): Array<IntArray> {
     }
 
     // Nullify rows based on values in first column
-    for (i in 1 until this.size) {
+    for (i in 1 until size) {
         if (this[i][0] == 0) {
             nullifyRow(this, i)
         }

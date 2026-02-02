@@ -1,14 +1,12 @@
 package LinkedListsCtCi
 
-class Node<T>(var data: T){
+class Node<T>(var data: T) {
 	var next: Node<T>? = null
 
-	fun getList(): String {
-		return if (next != null) {
-			data.toString() + "->" + next?.getList()
-		} else {
-			data.toString()
-		}
+	fun getList(): String = if (next != null) {
+		"$data->${next?.getList()}"
+	} else {
+		data.toString()
 	}
 }
 
@@ -17,7 +15,7 @@ class LinkedList<T> {
 
 	fun add(value: T) {
 		val newNode = Node(value)
-		val lastNode = this.last()
+		val lastNode = last()
 		if (lastNode != null) {
 			lastNode.next = newNode
 		} else {
@@ -27,29 +25,27 @@ class LinkedList<T> {
 
 	private fun last(): Node<T>? {
 		var node = head
-		return if (node != null){
-			while (node?.next != null) {
-				node = node.next
-			}
-			node
-		} else null
+		while (node?.next != null) {
+			node = node.next
+		}
+		return node
 	}
 }
 
 // partition a linked list so that all nodes < x come before nodes >= x; no need to sort partitions
 fun Node<Int>?.partition(x: Int): Node<Int>? {
-	var node: Node<Int>? = this
-	var head: Node<Int>? = node
-	var tail: Node<Int>? = node
+	var node = this
+	var head = node
+	var tail = node
 
 	while (node != null) {
-		val next: Node<Int>? = node?.next
-		if (node!!.data < x) {
-			/* Insert node at head. */
-			node?.next = head
+		val next = node.next
+		if (node.data < x) {
+			// Insert node at head
+			node.next = head
 			head = node
 		} else {
-			/* Insert node at tail. */
+			// Insert node at tail
 			tail?.next = node
 			tail = node
 		}

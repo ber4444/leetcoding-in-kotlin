@@ -1,17 +1,24 @@
 package Matrix
 
 fun multiply(a: Array<DoubleArray>, b: Array<DoubleArray>): Array<DoubleArray> {
-    val m1 = a.size
-    val n1 = a[0].size
-    val m2 = b.size
-    val n2 = b[0].size
-    if (n1 != m2) throw RuntimeException("Illegal matrix dimensions.")
-    val c = Array(m1) { DoubleArray(n2) }
-    for (i in 0 until m1)
-        for (j in 0 until n2)
-            for (k in 0 until n1)
-                c[i][j] += a[i][k] * b[k][j]
-    return c
+    val aRows = a.size
+    val aCols = a[0].size
+    val bRows = b.size
+    val bCols = b[0].size
+
+    if (aCols != bRows) throw IllegalArgumentException("Illegal matrix dimensions.")
+
+    val result = Array(aRows) { DoubleArray(bCols) }
+
+    for (i in 0 until aRows) {
+        for (j in 0 until bCols) {
+            for (k in 0 until aCols) {
+                result[i][j] += a[i][k] * b[k][j]
+            }
+        }
+    }
+
+    return result
 }
 
 val matrix = arrayOf(

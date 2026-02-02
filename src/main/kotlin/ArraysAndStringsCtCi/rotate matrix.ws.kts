@@ -2,8 +2,8 @@ package ArraysAndStringsCtCi
 
 // O(n^2) solution for: rotate NxN matrix by 90 degrees, elements are 4 bytes each
 fun Array<IntArray>.rotate(): Array<IntArray> {
-	if (this.isEmpty() || this.size != this[0].size) return this // Not a square
-	val n = this.size
+	if (isEmpty() || size != this[0].size) return this // Not a square
+	val n = size
 	for (layer in 0 until n / 2) {
 		val last = n - 1 - layer
 		for (i in layer until last) {
