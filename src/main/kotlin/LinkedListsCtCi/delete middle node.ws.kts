@@ -41,9 +41,29 @@ fun Node<Int>?.deleteNode(): Boolean {
     return true
 }
 
+fun LinkedList<Int>.removeBackHalf() {
+    var slow: Node<Int>? = head
+    var fast: Node<Int>? = head
+    var previous: Node<Int>? = null
+
+    while (fast?.next != null) {
+        previous = slow
+        slow = slow?.next
+        fast = fast.next?.next
+    }
+
+    if (previous != null) {
+        previous.next = null
+    } else {
+        head = null
+    }
+}
+
 var ll = LinkedList<Int>()
 for (i in 0..6) ll.add(i)
 
 ll.head?.next?.next?.next?.next.deleteNode() // delete node 4
 
-ll.head?.getList() == "0->1->2->3->5->6"
+println(ll.head?.getList() == "0->1->2->3->5->6")
+ll.removeBackHalf()
+println("and first half removed ${ll.head?.getList() == "0->1->2"}")

@@ -51,19 +51,19 @@ val hot = TreeNode("Hot")
 hot.add(TreeNode("tea"))
 hot.add(TreeNode("coffee"))
 val cold = TreeNode("Cold")
-val tree = TreeNode("Beverages").apply {
+val genericTree = TreeNode("Beverages").apply {
     add(hot)
     add(cold)
 }
-tree.dfs { println(it.value) }
+genericTree.dfs { println(it.value) }
 println("---")
 // print all nodes
-tree.printFormatted { println(it.value) }
+genericTree.printFormatted { println(it.value) }
 // search for particular node
-tree.bfs { if (it.value=="tea") println("found") }
+genericTree.bfs { if (it.value=="tea") println("found") }
 
 // read list into a tree:
-  val inputPairs = listOf(
+val inputPairs = listOf(
     8 to 7,
     7 to 6,
     6 to 4,
@@ -73,15 +73,15 @@ tree.bfs { if (it.value=="tea") println("found") }
     2 to 1,
     1 to null,
     9 to null
-  )
-    val tree = Node(0) // using Int's for this sample but type is generic
-    for (i in inputPairs.size-1 downTo 0) {
-        val item = inputPairs.get(i)
-        if (item.second == null) tree.add(Node(item.first)) 
-        else tree.dfs { 
-            if (it.value == item.second) {
-                println("will add ${item.first} to parent ${it.value}")
-                it.add(Node(item.first))
-            } 
-         }  
+)
+val tree = TreeNode(0) // using Int's for this sample but type is generic
+for (i in inputPairs.size-1 downTo 0) {
+    val item = inputPairs[i]
+    if (item.second == null) tree.add(TreeNode(item.first))
+    else tree.dfs {
+        if (it.value == item.second) {
+            println("will add ${item.first} to parent ${it.value}")
+            it.add(TreeNode(item.first))
+        }
     }
+}

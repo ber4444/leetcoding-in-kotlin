@@ -1,35 +1,35 @@
 package Threads
 
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.concurrent.thread
 
-class Blah {
-    var counter: Int = 0
-        private set
-    fun increment(): Int {
-        synchronized(this) {
-            counter++
-        }
-        return counter
+var shared: Int = 0
+val lock = Object()
+fun increment(): Int {
+    Thread.sleep(10)
+    synchronized(lock) { // to avoid race conditions where multiple threads would write to it at once
+                         // deadlock: 2 threads are waiting for each other to release a lock
+        shared++
     }
+    return shared
 }
-val shared = Blah()
 val shared2 = AtomicInteger(0)
 
-// only one will be able to call blah() because of synchronization, not in parallel
-// deadlock: 2 threads are waiting for each other to release a lock
-for (i in 1..10) Thread {
-    shared2.incrementAndGet()
-    shared.increment()
-}.start()
-println("a $shared2")
-println(shared.counter)
-for (i in 1..10) thread(start = true) {
-    shared2.incrementAndGet()
-    shared.increment()
+val executor: ExecutorService? = Executors.newFixedThreadPool(10)
+repeat (10) {
+    executor?.execute {
+        shared2.incrementAndGet()
+        increment()
+    }
 }
+executor?.shutdown()
+executor?.awaitTermination(1, TimeUnit.MINUTES)
+println("a $shared")
 println("b $shared2")
-println(shared.counter)
 
-
-
+// remember that LinkedList is not synchronized
+// you can do Collections.synchronizedList(list) to make it synchronized
+// ArrayDequeue is also not thread safe, but Stack is thread safe
+// HashMap is also not synchronized, but Hashtable is thread-safe

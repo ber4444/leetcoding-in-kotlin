@@ -10,7 +10,7 @@ fun MutableList<Char>.permutations(): List<String> {
 
 fun MutableList<Char>.backtrack(start: Int, perms: MutableList<String>) {
     if (start == size) {
-        perms.add(concatToString())
+        perms.add(this.toCharArray().concatToString())
     } else {
         for (i in start until size) {
             swap(start, i)

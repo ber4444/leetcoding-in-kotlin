@@ -31,7 +31,27 @@ runBlocking {
     }
 
     // Emit events
-    delay(100)
     eventManager.triggerEvent("Hello, StateFlow!")
-    delay(200)
 }
+
+// 2. Chain of responsibility: for a request with multiple operations,
+// we define a chain of handlers, each containing a reference to the next handler
+// each handler can decide to process or not process the request, then pass it on or return result
+// we can represent this chain as a tree
+interface HandlerChain {
+    fun addHeader(inputHeader: String): String
+}
+class AuthenticationHeader(val token: String?, var next: HandlerChain? = null): HandlerChain {
+    override fun addHeader(inputHeader: String) =
+        "$inputHeader\nAuthorization: $token"
+            .let { next?.addHeader(it) ?: it }
+}
+class ContentTypeHeader(val contentType: String, var next: HandlerChain? = null): HandlerChain {
+    override fun addHeader(inputHeader: String) =
+        "$inputHeader\nContentType: $contentType"
+            .let { next?.addHeader(it) ?: it }
+}
+val authHeader = AuthenticationHeader("12345")
+val contentTypeHeader = ContentTypeHeader("json", authHeader)
+authHeader.next = contentTypeHeader
+println(authHeader.addHeader("Headers with authentication"))

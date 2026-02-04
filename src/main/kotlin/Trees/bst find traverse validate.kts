@@ -51,12 +51,17 @@ class Node(
             else this.left?.insert(element)
     }
 
+    // visit the tree sequentially in order
     // this is applicable to any binary tree, not just for a bst
     fun traverseInOrder(visit:  (Int) -> Unit) {
         left?.traverseInOrder(visit) // left subtree
         visit(value) // root
         right?.traverseInOrder(visit) // right subtree
     }
+
+    // pre-order traverse would be visit root, then recursively left, then recursively right
+    // post-order would be left, then right, then root
+
 
     val min: Node?
         get() = left?.min ?: this

@@ -30,7 +30,7 @@ class LinkedList<T> {
 // find the Nth to last element of a singly linked list (size of list unknown)
 // here k=1 is last element, k=2 is 2nd last, etc
 // (if the size of the list is known, just iterate to the element at length-k position)
-fun Node<Int>.nthToLast(k: Int): Node<Int>? {
+fun Node<Int>?.nthToLast(k: Int): Node<Int>? {
     var first = this    // will remain k nodes ahead
     var second = this   // will denote the element at position length-k
 
@@ -47,7 +47,7 @@ fun Node<Int>.nthToLast(k: Int): Node<Int>? {
     // second will be at the right element.
     while (first != null) {
         first = first.next
-        second = second.next
+        second = second?.next
     }
 
     return second

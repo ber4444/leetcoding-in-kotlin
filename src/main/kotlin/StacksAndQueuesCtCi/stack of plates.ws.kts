@@ -5,7 +5,7 @@ import java.util.*
 // implement SetOfStacks - a Stack with a limit that creates a new Stack when the limit is reached
 // push and pop is applied to the whole set as if there was a single stack in it
 class SetOfStacks(var capacity: Int) {
-	private val stacks = mutableListOf<Stack<Int>>()
+	val stacks = mutableListOf<Stack<Int>>()
 
 	private val lastStack: Stack<Int>?
 		get() = stacks.lastOrNull()

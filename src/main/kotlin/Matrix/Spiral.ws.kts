@@ -9,7 +9,7 @@ fun Array<IntArray>.spiral(): List<Int> {
 
     // get number of elements
     val n = size * this[0].size
-    val result = ArrayList<Int>(n)
+    val ret = ArrayList<Int>(n)
     val printed = Array(size) { BooleanArray(this[0].size) }
     val middleRow = if (size % 2 == 0) (size - 1) / 2 else size / 2
     val middleCol = if (this[0].size % 2 == 0) (this[0].size - 1) / 2 else this[0].size / 2
@@ -23,7 +23,7 @@ fun Array<IntArray>.spiral(): List<Int> {
 
         while (col < this[0].size - depth) {
             if (!printed[row][col]) {
-                result.add(this[row][col])
+                ret.add(this[row][col])
                 printed[row][col] = true
             }
             col++
