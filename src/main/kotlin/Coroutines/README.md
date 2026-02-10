@@ -107,9 +107,9 @@ val postData = posts.await()
 ### 4. What's the difference between lifecycleScope and viewModelScope?
 
 **lifecycleScope:**
-- Tied to an Activity or Fragment's lifecycle
+- Tied to a Composable's lifecycle (via `LocalLifecycleOwner`)
 - Automatically cancelled when the lifecycle owner is destroyed
-- Cancelled when `onDestroy()` is called
+- Cancelled when the Composable leaves the composition permanently
 - Use for: UI-related operations that should stop when UI is destroyed
 
 **viewModelScope:**
@@ -119,21 +119,28 @@ val postData = posts.await()
 - Use for: business logic, data operations that should survive config changes
 
 ```kotlin
-// In Fragment/Activity
-lifecycleScope.launch {
-    // Cancelled on onDestroy()
-    collectUIState()
+// In Composable (via LaunchedEffect or rememberCoroutineScope)
+@Composable
+fun MyScreen() {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    
+    LaunchedEffect(Unit) {
+        lifecycleOwner.lifecycleScope.launch {
+            // Cancelled when Composable leaves composition
+            collectUIState()
+        }
+    }
 }
 
 // In ViewModel
 viewModelScope.launch {
     // Cancelled when ViewModel cleared
-    // Survives rotation
+    // Survives recomposition
     loadData()
 }
 ```
 
-**Interview tip:** "Use viewModelScope for data operations that should survive rotation, lifecycleScope for UI-bound operations."
+**Interview tip:** "Use viewModelScope for data operations that should survive recomposition, lifecycleScope for UI-bound operations in Composables."
 
 ---
 
@@ -484,9 +491,9 @@ fun tearDown() {
    }
    ```
 
-3. **lifecycleScope** (Android)
-   - Activity/Fragment lifecycle-bound
-   - Auto-cancelled on destroy
+3. **lifecycleScope** (Jetpack Compose)
+   - Composable lifecycle-bound
+   - Auto-cancelled when Composable leaves composition
 
 4. **viewModelScope** (Android)
    - ViewModel lifecycle-bound
