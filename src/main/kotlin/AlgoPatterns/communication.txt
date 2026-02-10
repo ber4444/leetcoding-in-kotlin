@@ -1,0 +1,5 @@
+verbalizing your thought process matters as much as the solution
+
+"what if this scales 10x?" type follow-ups should be expected 
+
+drill medium Leetcode with clean explanations

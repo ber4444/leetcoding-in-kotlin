@@ -1,9 +1,14 @@
 // 1. singleton (uses: network manager, DB access, logging, utility classes)
 // scoped singletons with DI are preferable, generally
+// examples: Retrofit instances, Room databases, repository classes.
+// Kotlin object is inherently thread-safe and lazy-initialized (created only when first accessed)
 object SomeClass
+// for singletons needing custom initialization logic, use double-checked locking, which requires explicit use of @Volatile and synchronized blocks
 
 // 2. factory (provides way to access functionality without caring about implementation)
 // good for separation of concerns, testability
+// factory lets us defer an object's instantiation to a subclass, as opposed to calling the constructor directly
+// example: ViewModel factories
 // e.g. here the currency impl details are in the factory
 sealed class Country {
     object USA : Country()
@@ -22,42 +27,19 @@ object CurrencyFactory {
 val currency = CurrencyFactory.currencyForCountry(Country.USA)
 println(currency.code)
 
-// 3. abstract factory (when we don't care about where we get the object or how we get it)
-// one level of abstraction over the factory pattern
-interface DataSource
-class DatabaseDataSource : DataSource
-class NetworkDataSource : DataSource
-abstract class DataSourceFactory {
-    abstract fun makeDataSource(): DataSource
-    companion object {
-        inline fun <reified T : DataSource> createFactory(): DataSourceFactory =
-            when (T::class) {
-                DatabaseDataSource::class -> DatabaseFactory()
-                NetworkDataSource::class -> NetworkFactory()
-                else -> throw IllegalArgumentException()
-            }
-    }
-}
-class DatabaseFactory : DataSourceFactory() {
-    override fun makeDataSource(): DataSource = DatabaseDataSource()
-}
-class NetworkFactory : DataSourceFactory() {
-    override fun makeDataSource(): DataSource = NetworkDataSource()
-}
-val dataSource = DataSourceFactory.createFactory<DatabaseDataSource>().makeDataSource()
-println(dataSource is DatabaseDataSource)
-
-// 4. builder (used when we have multiple params and some are optional)
+// 3. builder (used when we have multiple params and some are optional)
 // this is solved with named parameters
+// examples: AlertDialog.Builder, Notification.Builder, Retrofit configuration
+// builder solves problem  when many variants of constructor are created with increasing number of arguments
 
-// 5. lazy initialization (initialize a resource when it's needed, not when declared)
+// 4. lazy initialization (initialize a resource when it's needed, not when declared)
 val source by lazy { Object() }
 // or with "var":
 class Foo {
     lateinit var bar: Object
 }
 
-// 6. prototype (lets you copy existing objects without depending on their concrete classes)
+// 5. prototype (lets you copy existing objects without depending on their concrete classes)
 abstract class Shape: Cloneable {
     open val type: String? = null
     public override fun clone(): Any {

@@ -27,37 +27,12 @@ val adapter = DataDisplayAdapter(DataDisplay())
 val data = DatabaseDataGenerator().generateData()
 val output = adapter.convertData(data)
 
-// 2. bridge
-// e.g. different shapes and different colors linked, or devices and remote controls linked
-// you can have as many implementations as you want without exponentially increasing
-// the number of classes, e.g. RedCircle, RedRectangle, BlueCircle, BlueRectangle, ...
-interface Device {
-    var volume: Int
-    fun getName(): String
-}
-class Radio: Device {
-    override var volume = 0
-    override fun getName() = "radio"
-}
-interface Remote {
-    fun volumeUp()
-    fun volumeDown()
-}
-class AdvancedRemote(val device: Device): Remote {
-    override fun volumeUp() {
-        device.volume++
-    }
-
-    override fun volumeDown() {
-        device.volume--
-    }
-}
-val foo = AdvancedRemote(Radio())
-
-// 3. facade (provides a simple interface to complex functionality)
+// 2. facade (provides a simple interface to complex functionality)
 // it's a simple class like a repository, that holds a private field and exposes methods to act on it
+// Repository pattern that wraps network + database is a facade. 
 
-// 4. decorator (attach new behavior to an existing object, or override existing behavior)
+// 3. decorator (attach new behavior to an existing object, or override existing behavior)
+// example:  OkHttp interceptors, Retrofit call adapters.
 interface CoffeeMachine {
     fun makeSmallCoffee()
     fun makeLargeCoffee()
@@ -74,29 +49,9 @@ class EnhancedCoffeeMachine(val coffeeMachine: CoffeeMachine): CoffeeMachine by 
 }
 val machine = EnhancedCoffeeMachine(StandardCoffeeMachine())
 
-// 5. composite (combine multiple objects into one object, works when the core functionality
-// can be represented as a tree; this will allow the tree to be manipulated as a whole)
-open class Equipment(
-    open val price: Int,
-    val name: String
-)
-open class Composite(name: String): Equipment(0, name) {
-    private val equipments = ArrayList<Equipment>()
-    override val price: Int
-        get() = equipments.sumOf { it.price }
-
-    fun add(equipment: Equipment) = apply { equipments.add(equipment) }
-}
-class Computer: Composite("Mac")
-class HardDrive: Equipment(250, "Hard Drive")
-class Memory: Equipment(280, "Memory")
-val mac = Computer()
-    .add(HardDrive())
-    .add(Memory())
-println(mac.price)
-
-// 6. proxy (provide some functionality before and/or after calling an object)
+// 4. proxy (provide some functionality before and/or after calling an object)
 // similar to decorator, except it manages the lifecycle of its object
+// examples: Lazy initialization, permission handling, Room @Query under the hood
 interface Image {
     fun display()
 }
