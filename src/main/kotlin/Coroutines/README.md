@@ -1,20 +1,40 @@
 # Kotlin Coroutines for Android - Interview Guide
 
-## 1. How to Write Clean Async Code Using lifecycleScope/viewModelScope
+## 1. How to Write Clean Async Code Using LaunchedEffect/viewModelScope
 
-### lifecycleScope
-- **Lifecycle-aware coroutine scope** tied to Activity/Fragment lifecycle
-- Automatically cancels when the lifecycle is destroyed
-- Use for UI-related operations that should stop when the screen is gone
+### LaunchedEffect (Compose)
+- **Lifecycle-aware coroutine scope** tied to Composable lifecycle
+- Automatically cancels when the composable leaves composition
+- Use for one-time operations or effects tied to a key
 
 ```kotlin
-class MyFragment : Fragment() {
-    fun loadData() {
-        lifecycleScope.launch {
-            // Automatically cancelled when fragment is destroyed
+@Composable
+fun MyScreen(viewModel: MyViewModel) {
+    LaunchedEffect(Unit) {
+        // Automatically cancelled when composable leaves composition
+        val data = viewModel.repository.fetchData()
+        // Update state in ViewModel
+    }
+}
+```
+
+### rememberCoroutineScope (Compose)
+- **Composable-scoped coroutine scope** for event handlers
+- Cancelled when composable leaves composition
+- Use for user-triggered events (button clicks, etc.)
+
+```kotlin
+@Composable
+fun MyScreen() {
+    val scope = rememberCoroutineScope()
+    
+    Button(onClick = {
+        scope.launch {
+            // Launch coroutines from event handlers
             val data = repository.fetchData()
-            updateUI(data)
         }
+    }) {
+        Text("Load Data")
     }
 }
 ```
@@ -38,8 +58,9 @@ class MyViewModel : ViewModel() {
 ### Best Practices
 - **Never use GlobalScope** - it lives for the entire app lifecycle and can cause leaks
 - **Use structured concurrency** - let scopes manage cancellation
-- **Prefer viewModelScope** for data operations
-- **Use lifecycleScope** for UI updates or view-specific work
+- **Prefer viewModelScope** for data operations and business logic
+- **Use LaunchedEffect** for one-time effects or key-based triggers
+- **Use rememberCoroutineScope** for event handlers in Compose
 
 ---
 
@@ -51,9 +72,17 @@ class MyViewModel : ViewModel() {
 - **Example**: Updating TextViews, showing dialogs
 
 ```kotlin
-launch(Dispatchers.Main) {
-    textView.text = "Updated"
-    progressBar.visibility = View.GONE
+@Composable
+fun MyScreen() {
+    var text by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.Main) {
+            text = "Updated"
+            isLoading = false
+        }
+    }
 }
 ```
 
@@ -123,10 +152,13 @@ fun loadData() {
 ### Solution 1: Use Suspend Functions
 ```kotlin
 // ✅ GOOD - Non-blocking
-fun loadData() {
-    lifecycleScope.launch {
-        val data = repository.fetchData() // suspend function
-        updateUI(data) // UI stays responsive
+@Composable
+fun MyScreen(viewModel: MyViewModel) {
+    val data by viewModel.data.collectAsState()
+    
+    LaunchedEffect(Unit) {
+        viewModel.loadData() // Calls suspend function
+        // UI stays responsive
     }
 }
 ```
@@ -134,15 +166,25 @@ fun loadData() {
 ### Solution 2: Switch Dispatchers
 ```kotlin
 // ✅ GOOD - Offload heavy work
-lifecycleScope.launch {
-    showLoading() // Main thread
+@Composable
+fun MyScreen(viewModel: MyViewModel) {
+    val scope = rememberCoroutineScope()
+    var result by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
     
-    val result = withContext(Dispatchers.IO) {
-        // Off main thread
-        heavyOperation()
-    }
-    
-    updateUI(result) // Back on main thread
+    Button(onClick = {
+        scope.launch {
+            isLoading = true // Main thread
+            
+            val data = withContext(Dispatchers.IO) {
+                // Off main thread
+                heavyOperation()
+            }
+            
+            result = data // Back on main thread
+            isLoading = false
+        }
+    }) { Text("Load") }
 }
 ```
 
@@ -188,11 +230,14 @@ api.fetchUser(userId) { user ->
 #### Coroutines (Sequential Code)
 ```kotlin
 // ✅ Coroutines - reads like synchronous code
-lifecycleScope.launch {
-    val user = api.fetchUser(userId)
-    val posts = api.fetchPosts(user.id)
-    val comments = api.fetchComments(posts[0].id)
-    updateUI(user, posts, comments)
+@Composable
+fun UserScreen(userId: String, viewModel: UserViewModel) {
+    LaunchedEffect(userId) {
+        val user = viewModel.api.fetchUser(userId)
+        val posts = viewModel.api.fetchPosts(user.id)
+        val comments = viewModel.api.fetchComments(posts[0].id)
+        viewModel.updateData(user, posts, comments)
+    }
 }
 ```
 
@@ -374,34 +419,48 @@ val result = api.getData()
 ### The Problem Without Structured Concurrency
 ```kotlin
 // ❌ BAD - Potential leak with GlobalScope
-class MyActivity : AppCompatActivity() {
-    fun loadData() {
+@Composable
+fun MyScreen() {
+    Button(onClick = {
         GlobalScope.launch {
-            // This keeps running even after activity is destroyed!
+            // This keeps running even after composable is removed!
             val data = api.fetchLargeData()
-            updateUI(data) // CRASH if activity destroyed
+            // CRASH if composable is gone
         }
-    }
+    }) { Text("Load") }
 }
 ```
 
 **Issues:**
-- Coroutine outlives the Activity
-- Memory leak (references destroyed Activity)
-- Potential crash on UI update
+- Coroutine outlives the Composable
+- Memory leak (references removed Composable)
+- Potential crash on state update
 - No automatic cancellation
 
-### Solution 1: CoroutineScope Tied to Lifecycle
+### Solution 1: Use Compose Coroutine Scopes
 ```kotlin
-// ✅ GOOD - Automatic cancellation
-class MyActivity : AppCompatActivity() {
-    fun loadData() {
-        lifecycleScope.launch {
-            // Cancelled when activity is destroyed
-            val data = api.fetchLargeData()
-            updateUI(data) // Safe - cancelled if activity gone
-        }
+// ✅ GOOD - Automatic cancellation with LaunchedEffect
+@Composable
+fun MyScreen(viewModel: MyViewModel) {
+    LaunchedEffect(Unit) {
+        // Cancelled when composable leaves composition
+        val data = viewModel.api.fetchLargeData()
+        viewModel.updateState(data) // Safe - cancelled if composable gone
     }
+}
+
+// ✅ GOOD - Automatic cancellation with rememberCoroutineScope
+@Composable
+fun MyScreen(viewModel: MyViewModel) {
+    val scope = rememberCoroutineScope()
+    
+    Button(onClick = {
+        scope.launch {
+            // Cancelled when composable leaves composition
+            val data = viewModel.api.fetchLargeData()
+            viewModel.updateState(data)
+        }
+    }) { Text("Load") }
 }
 ```
 
@@ -422,14 +481,17 @@ class MyViewModel : ViewModel() {
 
 ```kotlin
 // Parent coroutine
-lifecycleScope.launch { // Parent
-    // Child coroutines
-    launch { task1() } // Child 1
-    launch { task2() } // Child 2
-    
-    async { task3() }.await() // Child 3
+@Composable
+fun MyScreen() {
+    LaunchedEffect(Unit) { // Parent
+        // Child coroutines
+        launch { task1() } // Child 1
+        launch { task2() } // Child 2
+        
+        async { task3() }.await() // Child 3
+    }
 }
-// When lifecycleScope is cancelled:
+// When composable leaves composition:
 // 1. All children are cancelled automatically
 // 2. Parent waits for children to finish cancellation
 // 3. No orphaned coroutines
@@ -508,19 +570,25 @@ class SearchViewModel : ViewModel() {
 ### Anti-Pattern: Breaking Structured Concurrency
 ```kotlin
 // ❌ BAD - Breaking structure with GlobalScope
-lifecycleScope.launch {
-    GlobalScope.launch {
-        // This escapes the parent scope!
-        // Won't be cancelled when lifecycleScope is cancelled
-        longRunningTask()
+@Composable
+fun MyScreen() {
+    LaunchedEffect(Unit) {
+        GlobalScope.launch {
+            // This escapes the parent scope!
+            // Won't be cancelled when composable is removed
+            longRunningTask()
+        }
     }
 }
 
 // ✅ GOOD - Keep structure
-lifecycleScope.launch {
-    launch {
-        // Properly nested, will be cancelled with parent
-        longRunningTask()
+@Composable
+fun MyScreen() {
+    LaunchedEffect(Unit) {
+        launch {
+            // Properly nested, will be cancelled with parent
+            longRunningTask()
+        }
     }
 }
 ```
@@ -536,7 +604,8 @@ lifecycleScope.launch {
 - ✅ Exception propagation control
 
 **Always Use:**
-- `lifecycleScope` in Activities/Fragments
+- `LaunchedEffect` for one-time effects in Composables
+- `rememberCoroutineScope` for event handlers in Composables
 - `viewModelScope` in ViewModels
 - `coroutineScope` for structured concurrency in suspend functions
 
@@ -549,7 +618,8 @@ lifecycleScope.launch {
 ## Quick Reference Card
 
 ### Scope Selection
-- **UI operations**: `lifecycleScope`
+- **One-time effects**: `LaunchedEffect`
+- **Event handlers**: `rememberCoroutineScope`
 - **Business logic**: `viewModelScope`
 - **Testing**: `TestScope` or `runTest`
 
