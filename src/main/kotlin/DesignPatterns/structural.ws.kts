@@ -1,5 +1,8 @@
+package DesignPatterns
+
 // 1. adapter (converts interface to another interface, or converts data between formats)
-// was popular in Android's View-based UI, no longer used in Compose
+// was popular in Android's View-based UI, no longer used in Compose.
+// Real-world examples: RecyclerView.Adapter (converts data list to ViewHolders), PagerAdapter.
 // 3rd party lib:
 data class DisplayDataType(val index: Int, val data: String)
 class DataDisplay {
@@ -28,11 +31,28 @@ val data = DatabaseDataGenerator().generateData()
 val output = adapter.convertData(data)
 
 // 2. facade (provides a simple interface to complex functionality)
-// it's a simple class like a repository, that holds a private field and exposes methods to act on it
-// Repository pattern that wraps network + database is a facade. 
+// it's a simple class like a repository, that holds a private field and exposes methods to act on it.
+// Real-world examples: Retrofit (hides HTTP complexity), Room (hides SQLite), Context (access to system services).
+class NetworkDataSource {
+    fun fetchData(): String = "Data from network"
+}
+class DatabaseDataSource {
+    fun saveData(data: String) = println("Saved \"$data\" to database")
+}
+class Repository { // this is a facade
+    private val networkDataSource = NetworkDataSource()
+    private val databaseDataSource = DatabaseDataSource()
+
+    fun fetchAndSave() {
+        val data = networkDataSource.fetchData()
+        databaseDataSource.saveData(data)
+    }
+}
+val repository = Repository()
+repository.fetchAndSave()
 
 // 3. decorator (attach new behavior to an existing object, or override existing behavior)
-// example:  OkHttp interceptors, Retrofit call adapters.
+// Real-world examples: ContextWrapper (used for locale changes or custom inflating), Java IO streams (BufferedInputStream), OkHttp Interceptors.
 interface CoffeeMachine {
     fun makeSmallCoffee()
     fun makeLargeCoffee()
@@ -50,8 +70,9 @@ class EnhancedCoffeeMachine(val coffeeMachine: CoffeeMachine): CoffeeMachine by 
 val machine = EnhancedCoffeeMachine(StandardCoffeeMachine())
 
 // 4. proxy (provide some functionality before and/or after calling an object)
-// similar to decorator, except it manages the lifecycle of its object
-// examples: Lazy initialization, permission handling, Room @Query under the hood
+// similar to decorator, except it manages the lifecycle of its object.
+// Delays creating expensive objects until they are actually needed.
+// Real-world examples: Retrofit.create() (Dynamic Proxy to turn interface into HTTP call), AIDL (Stub acts as proxy for remote service).
 interface Image {
     fun display()
 }

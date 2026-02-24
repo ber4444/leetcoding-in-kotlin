@@ -1,8 +1,9 @@
 package Warmup
 
-println((1..100).map { mapOf(
-    0 to it,
-    it % 3 to "Fizz",
-    it % 5 to "Buzz",
-    it % 15 to "FizzBuzz"
-)[0] })
+(1..100).forEach { i ->
+    val s = buildString {
+        if (i % 3 == 0) append("Fizz")
+        if (i % 5 == 0) append("Buzz")
+    }
+    println(s.ifEmpty { i })
+}

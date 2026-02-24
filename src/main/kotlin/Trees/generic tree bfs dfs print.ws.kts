@@ -2,16 +2,24 @@ package Trees
 
 import java.util.ArrayDeque
 
+// a tree is an undirected graph in which any two nodes are connected by exactly one path
+// we have access to the root node exclusively and other nodes can be accessed via that
 class TreeNode<T>(val value: T) {
     private val children: MutableList<TreeNode<T>> = mutableListOf()
 
+    // Time Complexity: O(1)
+    // Space Complexity: O(1)
     fun add(child: TreeNode<T>) = children.add(child)
 
+    // Time Complexity: O(N) where N is the number of nodes
+    // Space Complexity: O(H) where H is the height of the tree (recursion stack)
     fun dfs(visit: (TreeNode<T>) -> Unit) {
         visit(this)
         children.forEach { it.dfs(visit) }
     }
 
+    // Time Complexity: O(N) where N is the number of nodes
+    // Space Complexity: O(W) where W is the maximum width of the tree (queue size)
     fun bfs(visit: (TreeNode<T>) -> Unit) {
         visit(this)
         val queue = ArrayDeque<TreeNode<T>>()
@@ -25,6 +33,8 @@ class TreeNode<T>(val value: T) {
     }
 
     // modified bfs to print items on the same level of the tree in the same line
+    // Time Complexity: O(N)
+    // Space Complexity: O(W)
     fun printFormatted(visit: (TreeNode<T>) -> Unit) {
         val queue = ArrayDeque<TreeNode<T>>()
         var nodesLeftInCurrentLevel = 0
@@ -35,7 +45,7 @@ class TreeNode<T>(val value: T) {
             while (nodesLeftInCurrentLevel > 0) {
                 val node = queue.poll()
                 if (node != null) {
-                    print("${node.value} ")
+                    visit(node)
                     node.children.forEach { queue.add(it) }
                     nodesLeftInCurrentLevel--
                 } else {
@@ -47,6 +57,7 @@ class TreeNode<T>(val value: T) {
     }
 }
 
+println("--- Manual Construction Test ---")
 val hot = TreeNode("Hot")
 hot.add(TreeNode("tea"))
 hot.add(TreeNode("coffee"))
@@ -55,13 +66,19 @@ val genericTree = TreeNode("Beverages").apply {
     add(hot)
     add(cold)
 }
-genericTree.dfs { println(it.value) }
-println("---")
+print("DFS: ")
+genericTree.dfs { print("${it.value} ") }
+println()
+println("--- Formatted Print ---")
 // print all nodes
-genericTree.printFormatted { println(it.value) }
+genericTree.printFormatted { print("${it.value} ") }
+println("--- Search Test ---")
 // search for particular node
-genericTree.bfs { if (it.value=="tea") println("found") }
+var found = false
+genericTree.bfs { if (it.value=="tea") found = true }
+println(if (found) "Found tea" else "Tea not found")
 
+println("--- List Construction Test ---")
 // read list into a tree:
 val inputPairs = listOf(
     8 to 7,
@@ -80,8 +97,11 @@ for (i in inputPairs.size-1 downTo 0) {
     if (item.second == null) tree.add(TreeNode(item.first))
     else tree.dfs {
         if (it.value == item.second) {
-            println("will add ${item.first} to parent ${it.value}")
+            // println("will add ${item.first} to parent ${it.value}")
             it.add(TreeNode(item.first))
         }
     }
 }
+
+println("Constructed Tree Structure:")
+tree.printFormatted { print("${it.value} ") }

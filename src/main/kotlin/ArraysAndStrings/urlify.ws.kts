@@ -1,15 +1,29 @@
-package ArraysAndStringsCtCi
+package ArraysAndStrings
 
-// O(n) time O(1) space solution to replace " " with "%20" in place
-// trueLength means the number of chrs from the input that we want to consider
-// use a CharArray because String is immutable so this way we can do it in one pass
-// I guess StringBuilder would work too
+/**
+ * Replaces all spaces in a string with '%20'.
+ * Assumes the string has sufficient free space at the end to hold the additional characters,
+ * and that we are given the "true" length of the string.
+ *
+ * Time Complexity: O(n) where n is the true length of the string.
+ * Space Complexity: O(1) as we modify the array in place.
+ */
 fun CharArray.urlify(trueLength: Int): String {
-    if (size == trueLength) return String(this)
+    // Count spaces in the first trueLength characters
+    var spaceCount = 0
+    for (i in 0 until trueLength) {
+        if (this[i] == ' ') {
+            spaceCount++
+        }
+    }
 
-    // triple the spaces to leave room for "%20"
-    var targetIdx = trueLength + take(trueLength).count { it == ' ' } * 2 - 1
-    // now edit the string backwards
+    // If no spaces, return early
+    if (spaceCount == 0) return String(this)
+
+    // Calculate the new length required
+    var targetIdx = trueLength + spaceCount * 2 - 1
+
+    // Iterate backwards
     for (idx in trueLength - 1 downTo 0) {
         if (this[idx] != ' ') {
             this[targetIdx--] = this[idx]
@@ -24,9 +38,12 @@ fun CharArray.urlify(trueLength: Int): String {
     return String(this)
 }
 
-"Ped%20ram" == "Ped ram  ".toCharArray().urlify(7)
-"%20Pedram" == " Pedram  ".toCharArray().urlify(7)
-"Pedram%20%20" == "Pedram      ".toCharArray().urlify(8)
-"Pedram" == "Pedram".toCharArray().urlify(6)
-"Ped%20ram     " == "Ped ram       ".toCharArray().urlify(7)
-"P%20e%20d%20r%20a%20m" == "P e d r a m          ".toCharArray().urlify(11)
+// Tests
+check("Ped%20ram" == "Ped ram  ".toCharArray().urlify(7)) { "Test 1 failed" }
+check("%20Pedram" == " Pedram  ".toCharArray().urlify(7)) { "Test 2 failed" }
+check("Pedram%20%20" == "Pedram      ".toCharArray().urlify(8)) { "Test 3 failed" }
+check("Pedram" == "Pedram".toCharArray().urlify(6)) { "Test 4 failed" }
+check("Ped%20ram     " == "Ped ram       ".toCharArray().urlify(7)) { "Test 5 failed" }
+check("P%20e%20d%20r%20a%20m" == "P e d r a m          ".toCharArray().urlify(11)) { "Test 6 failed" }
+
+"All tests passed"

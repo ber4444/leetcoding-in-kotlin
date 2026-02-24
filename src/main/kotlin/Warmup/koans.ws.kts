@@ -6,7 +6,7 @@ import java.util.*
 
 @JvmField val _reader = System.`in`.bufferedReader()
 // or:  readLine()!!.toInt()
-// for list of ints: readLine()!!.split(" ").map { it.toInt() }
+// for list of ints: readLine()!!.split(" ").filter { it.isNotEmpty() }.map { it.toInt() }
 // or reading unspecified amount of lines:     val lines2 = generateSequence(::readLine)
 @JvmField var _tokenizer: StringTokenizer = StringTokenizer("")
 
@@ -17,7 +17,7 @@ fun read(): String {
 }
 fun readInt() = read().toInt()
 fun readStrings(n: Int) = List(n) { read() }
-fun readInts(n: Int) = List(n) { read().toInt() } // java: new Scanner(System.in).nextInt() or nextLine()
+fun readInts(n: Int) = List(n) { read().toInt() } // java: similar to calling nextInt() n times
 fun readIntArray(n: Int) = IntArray(n) { read().toInt() }
 
 data class Result(val result: Int, val status: String)
@@ -53,8 +53,12 @@ fun main() {
     myObject.doSomething()
 }
 
+// primitive "int[]" that avoids boxing into objects such as we'd do with Array<Int>
 IntArray(10).apply { fill(-1) }
 IntArray(10) { -1 }
+val v1 = intArrayOf(1,2,3)
+val v2 = v1.copyOf() // copy of v1 into v2
+val v3 = v1.copyOfRange(0,2) // partial copy
 
 //Swap two variables
 var a = 1
@@ -69,6 +73,7 @@ val countDown = buildString {
 }
 println(countDown)
 
+val emptyList = emptyList<Int>()
 val numbers = mutableListOf(1, 2, 3, 4, 5, 6)
 val oddNumbers = numbers
     .filter { it % 2 != 0 }
@@ -100,8 +105,10 @@ class DateRange(val start: MyDate, val end: MyDate) : Iterable<MyDate> {
             var current: MyDate = start
             override fun next(): MyDate {
                 if (!hasNext()) throw NoSuchElementException()
-                //current = current.followingDate()
-                return current
+                val result = current
+                // Assume logic to advance date exists here, e.g.:
+                // current = current.plusDays(1) 
+                return result
             }
             override fun hasNext(): Boolean = current <= end
         }
@@ -129,18 +136,48 @@ strings.sortedBy { it.length } ==
         listOf("a", "cc", "bbb")
 strings.sortedDescending() ==
         listOf("cc", "bbb", "a")
+strings.sortedWith(Comparator<String> { x, y ->
+    when {
+        x == "b" || y == "b" -> -1
+        else -> 1
+    }
+})
 
 val nums = listOf(1, -1, 2) // or setOf(...)
+nums - listOf(1,-1) == listOf(2)
 nums.filter { it > 0 } == listOf(1, 2)
-nums.map { it * it } == listOf(1, 1, 4)
+nums.map { it * it } == listOf(1, 1, 4) // transforming all elements of a list
+nums.mapIndexed { idx, value ->
+    if (idx == 0) value + 1 else value + 2
+}
+
+data class Shop(val name: String, val customers: List<Customer>)
+data class Customer(val name: String, val city: City, val orders: List<Order>)
+data class Order(val products: List<Product>)
+data class Product(val name: String, val price: Double)
+data class City(val name: String)
+val sampleCustomer = Customer(
+    "Alice",
+    City("London"),
+    listOf(
+        Order(listOf(Product("Apple", 2.0), Product("Banana", 1.5))),
+        Order(listOf(Product("Orange", 3.0)))
+    )
+)
+val customers = listOf(sampleCustomer)
 
 // Find all the different cities the customers are from
-//fun Shop.getCustomerCities(): Set<City> = customers.map { it.city }.toSet()
+fun Shop.getCustomerCities(): Set<City> = customers.map { it.city }.toSet()
 
-listOf(1, 42, 4).maxOrNull() == 42
+val intList = listOf(1, 42, 4)
+intList.maxOrNull() == 42
+intList.sorted().binarySearch(42) // works only if the list is sorted
+intList.indexOf(42)
+intList.find { it > 40 } // finds first element greater than 40, or null if not found
+intList.findLast { it < 40 }
 listOf("a", "ab").minByOrNull(String::length) == "a"
-// customer.orders.flatMap(Order::products).maxBy(Product::price)
-// customer.orders.flatMap { it.products }.sumByDouble { it.price }
+val maxPrice = sampleCustomer.orders.flatMap(Order::products).maxByOrNull(Product::price)
+sampleCustomer.orders.flatMap { it.products }.sumOf { it.price }
 
 val list = listOf("abc", "cdef")
 list.associateWith { it.length } ==
@@ -148,7 +185,7 @@ list.associateWith { it.length } ==
 list.associate { it.first() to it.length } ==
         mapOf('a' to 3, 'c' to 4)
 //// Build a map from the customer name to the customer
-//customers.associateBy(Customer::name)
+customers.associateBy(Customer::name)
 
 val res =
     listOf("a", "b", "ba", "ccc", "ad")
@@ -158,11 +195,11 @@ res == mapOf(
     2 to listOf("ba", "ad"),
     3 to listOf("ccc"))
 //// Build a map that stores the customers living in a given city
-//customers.groupBy { it.city }
+customers.groupBy { it.city }
 
 listOf("abc", "12").flatMap { it.toList() } == listOf('a', 'b', 'c', '1', '2')
 //// Return all products the given customer has ordered
-//orders.flatMap(Order::products)
+sampleCustomer.orders.flatMap(Order::products)
 
 //val maximumSizeOfGroup = groupsByLength.values.map { group -> group.size }.maxOrNull()
 
@@ -172,23 +209,3 @@ val isOdd: Int.() -> Boolean = { this % 2 != 0 }
 val names = listOf("Chandra", "Rivu", "Nick", "Ahmed")
 val ages = listOf(30, 27, 35, 19)
 println(names.zip(ages))
-
-fun main() {
-    var myFunc: (Int) -> Int
-    myFunc = { it * 2 }
-    myFunc = { it / 2 }
-    println("10 * 2 ${myFunc(10)}")
-}
-
-// lambdas are similar to callbacks:
-//Interfaces used as callbacks can have multiple abstract methods, while functional interfaces can only have a single abstract method.
-fun highOrder(lambda: () -> Unit) {
-    println("Before anotherFunc()")
-    lambda()
-    println("After anotherFunc()")
-}
-fun main() {
-    highOrder {
-        println("anotherFunc()")
-    }
-}

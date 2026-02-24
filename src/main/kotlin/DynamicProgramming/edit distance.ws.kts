@@ -1,6 +1,11 @@
 package DynamicProgramming
 
-// minimum operation required to transform one thing to another
+/**
+ * Minimum operation required to transform one string to another (Levenshtein distance).
+ *
+ * Time Complexity: O(N * M) where N and M are the lengths of the two strings.
+ * Space Complexity: O(N * M) for the 2D array.
+ */
 fun String.editDistance(s: String): Int {
     val matrix = Array(length + 1) { Array(s.length + 1) { 0 } }
     for (i in 0..length) matrix[i][0] = i
@@ -19,4 +24,9 @@ fun String.editDistance(s: String): Int {
     return matrix[length][s.length]
 }
 
+// Tests
 println("sunday".editDistance("monday") == 2)
+println("horse".editDistance("ros") == 3)
+println("intention".editDistance("execution") == 5)
+println("".editDistance("a") == 1)
+println("abc".editDistance("abc") == 0)

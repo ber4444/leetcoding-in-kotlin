@@ -1,8 +1,17 @@
-package ArraysAndStringsCtCi
+package ArraysAndStrings
 
-// O(n) solution to check if a string is a palindrome permutation, n being the length of the input string
-// palindrome is the same backwards and forwards (*), permutation is a rearrangement of letters
-// (*) meaning all chrs must have an even count, only the middle chr can have an odd count
+/**
+ * Checks if a string is a permutation of a palindrome.
+ *
+ * Time Complexity: O(N) where N is the length of the string.
+ * - Regex replacement: O(N)
+ * - Grouping and counting: O(N)
+ * - Counting odds: O(1) (bounded by alphabet size)
+ *
+ * Space Complexity: O(N)
+ * - Creates a new string for the regex replacement.
+ * - Map storage is O(1) (bounded by alphabet size).
+ */
 fun String.isPalindromePerm(): Boolean {
     // count how many times each chr appears (excluding non-letters)
     val charCounts = replace("[^A-Za-z]".toRegex(), "").groupingBy { it }.eachCount()
@@ -11,8 +20,24 @@ fun String.isPalindromePerm(): Boolean {
     return charCounts.count { it.value % 2 == 1 } <= 1
 }
 
-"pdepdrremama".isPalindromePerm()
-! "pedram".isPalindromePerm()
-"pdepdrremama".isPalindromePerm()
-! "ped ram".isPalindromePerm()
-"pde  pd6rr--emam%a".isPalindromePerm()
+// Test cases
+val testCases = listOf(
+    "pdepdrremama" to true,
+    "pedram" to false,
+    "ped ram" to false,
+    "pde  pd6rr--emam%a" to true,
+    "aba" to true,
+    "aab" to true,
+    "baa" to true,
+    "abc" to false
+)
+
+println("Running tests...")
+testCases.forEach { (input, expected) ->
+    val result = input.isPalindromePerm()
+    if (result == expected) {
+        println("PASS: \"$input\" -> $result")
+    } else {
+        println("FAIL: \"$input\" -> $result, expected $expected")
+    }
+}

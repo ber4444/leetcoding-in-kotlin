@@ -20,7 +20,7 @@ fun fibonacci(n: Int): Int = when {
 
 /*
 the time complexity of this is O(2^n) because the call tree has n depth and it's a binary tree
-the space complexity is O(n) because only that many notes of the tree exist at any given time
+the space complexity is O(n) because only that many nodes of the tree exist at any given time
 TIME complexity can be improved to O(n) as well using memoization, see DP/fibonacci in this project
  */
 
@@ -43,3 +43,4 @@ fun factorial(n: Int): Int = when {
     n == 0 -> 1
     else -> n * factorial(n - 1)
 }
+println(factorial(5))

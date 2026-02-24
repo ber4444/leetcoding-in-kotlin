@@ -1,0 +1,27 @@
+Worst and expected case are usually the same, but can differ. Big O is often asked when the question implicitly refers to the upper bound of the worst case.
+E.g. quicksort, time complexity:
+- worst: n*n (n^2) - quadratic time - typically when the array is already sorted and the pivot is the first or last element
+- expected: n log n - efficient scaling - for each we divide by half
+- for recursive calls, runtime is branches^depth often, e.g. `return f(n-1) + f(n-1)` would be O(2^n)
+
+Space complexity:
+- IntArray(n) is O(n) space
+- Array(n) { IntArray(n) { 0 } } is a matrix of O(n^2) space
+- recursive calls take up space due to the call stack
+
+Drop the constants and the non-dominant terms, e.g. O(logN + N) is just N
+
+If you have two arrays as parameters and you loop through each, then runtime is O(a+b) 
+
+Amortize the time, e.g. inserting into an ArrayList is O(1) time even though rarely we'd need to enlarge the array for insertion.
+
+Common runtimes, going from faster to slower:
+- O(1) is constant time
+- O(logN) is logarithmic time, dividing N by 2 each time, e.g. binary search or lookup in a BST
+- O(N) is linear time, number of operations equal to the number of input items
+- O(NlogN) is linearithmic time
+- O(N^2) is quadratic time, e.g. iterating through an array in an outer loop and an inner loop
+  O(A*B) if outer loop iterates through array with length A, and inner loop through array with length B
+- O(2^N), here if N==20, it's about a million operations
+- O(N!) is factorial time, for N==20, we'd get enormously big number of operations
+

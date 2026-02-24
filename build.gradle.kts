@@ -46,6 +46,7 @@ kotlin {
 // Example of overriding at compilation unit level
 tasks.named<KotlinJvmCompile>("compileKotlin"){
     compilerOptions {
+        freeCompilerArgs.add("-Xallow-any-scripts-in-source-roots")
         apiVersion = KotlinVersion.fromVersion(kotlinVersion)
     }
 }

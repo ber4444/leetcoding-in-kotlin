@@ -3,12 +3,11 @@ package Coroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-
-// "Write a debounce function using coroutines"
 
 /**
  * Debounce function that delays execution until a specified time has passed
@@ -16,7 +15,7 @@ import kotlinx.coroutines.runBlocking
  */
 class Debouncer<T>(
     private val delayMillis: Long = 300,
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 ) {
     private var job: Job? = null
 
@@ -110,12 +109,3 @@ runBlocking {
     delay(400) // Wait for debounce to complete
     println("Total updates performed: $updateCount")
 }
-
-
-
-
-
-
-
-
-

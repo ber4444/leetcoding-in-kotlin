@@ -1,18 +1,34 @@
-package ArraysAndStringsCtCi
+package ArraysAndStrings
 
-// O(n) solution to check if str has all unique characters
+// Helper function to test implementations
+fun check(name: String, result: Boolean) {
+    println("$name: ${if (result) "PASS" else "FAIL"}")
+}
+
+// -------------------------------------------------------
+// V1: Using a Set
+// -------------------------------------------------------
+// Time Complexity: O(N)
+//   - We iterate over the string to populate the set.
+// Space Complexity: O(N) (or O(1) if character set is fixed)
+//   - We store unique characters in a Set.
 fun String.isUnique() = length == toSet().size
 
-"".isUnique()
-"abcd".isUnique()
-! "test".isUnique()
-! "estt".isUnique()
+println("--- Testing V1 (Set) ---")
+check("Empty string", "".isUnique())
+check("Unique chars", "abcd".isUnique())
+check("Duplicate chars", !"test".isUnique())
+check("Duplicate chars end", !"estt".isUnique())
 
-// what if we cannot use a Set:
-// should clarify if str is ASCII or Unicode - answer: the former, meaning we have 128 chr options
-// otherwise we'd need to consider Char.MIN_VALUE.code..Char.MAX_VALUE.code
-// O(c) space, O(c) time solution, where c is the size of character set
-// this may be faster than the above where n was the size of the input string
+
+// -------------------------------------------------------
+// V2: Using a Boolean Array (Assuming ASCII)
+// -------------------------------------------------------
+// Time Complexity: O(N)
+//   - We iterate through the string once.
+//   - Optimization: If N > 128, we return immediately, so effective time is O(min(N, 128)) => O(1).
+// Space Complexity: O(1)
+//   - We use a fixed size boolean array of 128 elements.
 fun String.isUniqueV2(): Boolean {
 	if (length > 128) return false // you cannot form a unique str from a larger array of chrs than what's in the alphabet
 
@@ -25,13 +41,20 @@ fun String.isUniqueV2(): Boolean {
 	return true
 }
 
-"".isUniqueV2()
-"abcd".isUniqueV2()
-! "test".isUniqueV2()
-! "estt".isUniqueV2()
+println("\n--- Testing V2 (Boolean Array) ---")
+check("Empty string", "".isUniqueV2())
+check("Unique chars", "abcd".isUniqueV2())
+check("Duplicate chars", !"test".isUniqueV2())
+check("Duplicate chars end", !"estt".isUniqueV2())
 
-// what if you cannot use data structures?
-// compare each chr of str1 to each chr of str2, O(n^2) time
+
+// -------------------------------------------------------
+// V3: No Data Structures (Brute Force)
+// -------------------------------------------------------
+// Time Complexity: O(N^2)
+//   - Nested loops compare each character with every other character.
+// Space Complexity: O(1)
+//   - No additional data structures used.
 fun String.isUniqueV3(): Boolean {
 	for (i in indices) {
 		for (j in i + 1 until length) {
@@ -41,7 +64,8 @@ fun String.isUniqueV3(): Boolean {
 	return true
 }
 
-"".isUniqueV3()
-"abcd".isUniqueV3()
-! "test".isUniqueV3()
-! "estt".isUniqueV3()
+println("\n--- Testing V3 (No Data Structures) ---")
+check("Empty string", "".isUniqueV3())
+check("Unique chars", "abcd".isUniqueV3())
+check("Duplicate chars", !"test".isUniqueV3())
+check("Duplicate chars end", !"estt".isUniqueV3())

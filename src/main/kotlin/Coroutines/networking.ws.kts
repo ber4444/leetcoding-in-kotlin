@@ -1,3 +1,5 @@
+package Coroutines
+
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -9,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -18,19 +22,19 @@ runBlocking {
     println("Requesting...")
     try {
         // in compose, this would be: val state by coinsListViewModel.state.collectAsStateWithLifecycle()
-        VM().state.collect { value ->
-            println(value.coins.joinToString("\n") { it.toString() })
-            if (value.coins.isNotEmpty() || value.error != null) {
-                // Exit collection after first real result
-                return@collect
+        VM().state
+            .onEach { value ->
+                println(value.coins.joinToString("\n") { it.toString() })
             }
-        }
+            .first { value ->
+                value.coins.isNotEmpty() || value.error != null
+            }
     } catch (e: Exception) {
         println("Error: ${e.message}")
         e.printStackTrace()
     }
 }
-// in compose, you'd get it as   //========presentation layer:
+//========presentation layer:
 data class CoinsState( // we would annotate this @Stable in compose
     val error: String? = null,
     val coins: List<UiCoinListItem> = emptyList(),

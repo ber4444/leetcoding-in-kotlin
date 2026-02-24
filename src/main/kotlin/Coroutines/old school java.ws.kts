@@ -12,16 +12,19 @@ fun increment(): Int {
     synchronized(lock) { // to avoid race conditions where multiple threads would write to it at once
                          // deadlock: 2 threads are waiting for each other to release a lock
         shared++
+        return shared
     }
-    return shared
 }
 val shared2 = AtomicInteger(0)
 
+// increment the integer on 10 threads in parallel
 val executor: ExecutorService? = Executors.newFixedThreadPool(10)
 repeat (10) {
     executor?.execute {
         shared2.incrementAndGet()
-        increment()
+        runCatching {
+            increment()
+        }.onFailure { println("oopsies") }
     }
 }
 executor?.shutdown()
@@ -31,5 +34,5 @@ println("b $shared2")
 
 // remember that LinkedList is not synchronized
 // you can do Collections.synchronizedList(list) to make it synchronized
-// ArrayDequeue is also not thread safe, but Stack is thread safe
+// ArrayDeque (similar to ArrayList) is also not thread-safe, but Stack is
 // HashMap is also not synchronized, but Hashtable is thread-safe
