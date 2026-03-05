@@ -4,7 +4,7 @@ TS: https://gist.github.com/ber4444/f321cbbb0a892a442d9e01aeb637059f
 
 Python: https://gist.github.com/ber4444/8356777204ba68de0bef5c8ac8dfaaa8
 
-Unlike in JS/python, Kotlin Coroutines can share the same objects. (You must still use synchronization primitives (like Mutex or Atomic variables or immutable data structures to prevent race conditions.)
+Unlike in JS/python, Kotlin coroutines can share the same objects. (You must still use synchronization primitives (like Mutex or Atomic variables or immutable data structures to prevent race conditions.)
 This is where kotlin shines compared to python and typescript which are single-threaded.
 
 In TS/JS async/await cannot parallelize CPU work, if you run a heavy math calculation, the whole app freezes.
@@ -28,7 +28,7 @@ Specific strengths of Kotlin that TS/Python lacks:
 4. kotlin has immutable data classes built in
 5.  Dispatchers.IO is for I/O bound tasks such as network requests, database queries, and file I/O.
     TS and Python are ok-ish for those, with promises and asyncio,
-    but they still lack structured concurrency. (_Update, Python 3.11+_ introduced asyncio.TaskGroup, which provides structured concurrency very similar to Kotlin.) Coroutines must be launched in a Scope. If the scope is cancelled
+    but they still lack structured concurrency. (_Update, Python 3.11+_ introduced asyncio.TaskGroup, which provides structured concurrency very similar to Kotlin.) coroutines must be launched in a Scope. If the scope is cancelled
     (e.g., ViewModel is cleared or a Network request times out), all child coroutines are automatically killed.
     In TS (Promises) or Python (asyncio), if you start a background task and the user closes the screen,
     that task might keep running in the background (a "zombie" or orphaned task).

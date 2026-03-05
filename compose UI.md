@@ -1,6 +1,39 @@
 The repository uses withContext(Dispatchers.IO) for database calls
 
-ViewModel exposes StateFlow to the UI, and we use viewModelScope to survive configuration changes
+ViewModel exposes StateFlow to the UI, and we use viewModelScope to survive configuration changes. UDF:
+```
+// ViewModel
+class ScreenViewModel : ViewModel() {
+    private val _state = MutableStateFlow(ScreenState())
+    val state: StateFlow<ScreenState> = _state.asStateFlow()
+    
+    fun onEvent(event: ScreenEvent) {
+        when (event) {
+            is ScreenEvent.LoadData -> loadData()
+            is ScreenEvent.UpdateItem -> updateItem(event.item)
+        }
+    }
+}
+
+// Composable
+@Composable
+fun Screen(viewModel: ScreenViewModel = viewModel()) {
+    val state by viewModel.state.collectAsState()
+    
+    ScreenContent(
+        state = state,
+        onEvent = viewModel::onEvent
+    )
+}
+
+@Composable
+fun ScreenContent(
+    state: ScreenState,
+    onEvent: (ScreenEvent) -> Unit
+) {
+    // Pure composable function - no memory leak risk
+}
+```
 
 Preserving state across recompositions, including configuration changes (think of toggles or animations):
 val selectedTab by rememberSaveable { mutableStateOf(0) } // or use a ViewModel
@@ -20,13 +53,41 @@ CardLayout(
 )
 
 Side effects:
-Doesn’t emit UI, runs relative to entering composition and key changes
-Mostly used to trigger 1-off events
-LaunchedEffect(userId) { // Launches a coroutine; In case of recomposition with different keys, previous coroutine gets cancelled and new one
-is ran; If the composable exits the composition, the coroutine gets cancelled
+
+Launches a coroutine:
+```
+LaunchedEffect(userId) { // In case of recomposition with different keys, previous coroutine gets cancelled and new one is ran
     viewModel.load(userId)
 }
-DisposableEffect(Unit) {
-    registerListener()
-    onDispose { unregisterListener() } // allows cleanup upon leaving composition
-}
+// If the composable exits the composition, the coroutine gets cancelled
+```
+
+Cleanup:
+```
+    var isActive by remember { mutableStateOf(false) }
+    LaunchedEffect(isActive) {
+        while (isActive) // Perform work
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            isActive = false
+        }
+    }
+    Button(onClick = { isActive = !isActive }) {
+        Text(if (isActive) “Stop Task” else “Start Task”)
+    }
+```
+
+Use derivedStateOf for Computed Values:
+```
+    val expensiveComputation by remember {
+        derivedStateOf {
+            items.filter { it.isValid }.sortedBy { it.priority }
+        }
+    }
+    LazyColumn {
+        items(expensiveComputation) { item ->
+            ItemRow(item)
+        }
+    }
+```    
