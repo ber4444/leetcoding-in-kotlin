@@ -2,11 +2,13 @@ package morePatterns
 
 import java.util.LinkedHashMap
 
-// LRU cache is useful when we want to access recently used items and discard the least recently used ones
 // note there is also an android.util.LruCache
 
 /**
  * Least Recently Used (LRU) Cache implementation using LinkedHashMap.
+ * Hash table providing O(1) access and doubly-linked list maintaining the eviction order 
+ * When an item is accessed, we move it to the head of the list
+ * Ideal for in-memory stores where we want to discard the least recently used items
  *
  * Time Complexity:
  * - get: O(1)
